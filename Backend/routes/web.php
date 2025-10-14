@@ -1,3 +1,3 @@
 <?php
 
-// no usaremos rutas web, solo API
+//NO VAMOS A USAR RUTAS WEB POR QUE TODO ESTA POR MEDIO DE APIS
