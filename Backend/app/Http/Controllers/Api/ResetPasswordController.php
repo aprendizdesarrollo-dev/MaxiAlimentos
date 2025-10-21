@@ -4,41 +4,44 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use App\Models\User;
 
 class ResetPasswordController extends Controller
 {
-        public function reset(Request $request)
+    public function reset(Request $request)
     {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
+            'correo' => 'required|email|exists:users,correo',
+            'token' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
-            }
-        );
+        $record = DB::table('password_reset_tokens')
+            ->where('correo', $request->correo)
+            ->where('token', $request->token)
+            ->first();
 
-        if ($status === Password::PASSWORD_RESET) {
-            return response()->json([
-                'success' => true,
-                'message' => '¡Contraseña actualizada con éxito!',
-            ], 200);
-        } else {
+        if (!$record) {
             return response()->json([
                 'success' => false,
-                'message' => __($status),
+                'message' => 'El enlace de recuperación no es válido o ha expirado.',
             ], 400);
         }
-    }
 
+        $user = User::where('correo', $request->correo)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Eliminar token usado
+        DB::table('password_reset_tokens')
+            ->where('correo', $request->correo)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contraseña restablecida correctamente. Ahora puedes iniciar sesión.',
+        ]);
+    }
 }

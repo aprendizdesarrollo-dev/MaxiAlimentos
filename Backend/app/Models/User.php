@@ -2,28 +2,37 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Notifications\CustomResetPassword;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    protected $table = 'users';
 
     protected $fillable = [
-        'name',
-        'email',
+        'nombre',
+        'correo',
         'password',
+        'cedula',
+        'cargo',
+        'area',
+        'rol',
+        'is_verified',
+        'verification_token',
     ];
+    protected $hidden = ['password', 'remember_token'];
 
-    protected $hidden = [
-        'password',
-    ];
+    /**
+     * 🔥 Le decimos a Laravel que el campo para login es 'correo'
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'correo';
+    }
 
-    // Métodos requeridos por JWT
+    /**
+     * Métodos requeridos por JWT
+     */
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -32,10 +41,5 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
-    }
-
-    public function sendPasswordResetNotification($token)
-    {
-    $this->notify(new CustomResetPassword($token));
     }
 }

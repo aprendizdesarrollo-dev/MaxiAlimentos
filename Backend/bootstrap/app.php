@@ -3,29 +3,27 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Middleware\HandleCors; 
 
-/**
- * Archivo de arranque principal de Laravel.
- * Aquí se configuran las rutas, middlewares y excepciones.
- */
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        // 📌 Rutas Web
-        web: __DIR__.'/../routes/web.php',
-
-        // 📌 Rutas API (las de /api/...)
-        api: __DIR__.'/../routes/api.php',
-
-        // 📌 Rutas de consola (comandos artisan personalizados)
-        commands: __DIR__.'/../routes/console.php',
-
-        // 📌 Ruta de health check (Laravel 11+)
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Aquí podrías registrar middlewares globales si los necesitas
+        // Middleware globales personalizados
+        $middleware->alias([
+            'auth.jwt' => \App\Http\Middleware\JwtMiddleware::class,
+        ]);
+
+        //Agregar CORS NATIVO (Laravel 11+)
+        $middleware->api(prepend: [
+            HandleCors::class, 
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Aquí podrías manejar excepciones globales
+        // Puedes manejar excepciones globales aquí
     })
     ->create();
