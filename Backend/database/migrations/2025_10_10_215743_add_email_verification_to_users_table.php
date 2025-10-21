@@ -14,13 +14,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // token puede ser null hasta que el usuario solicite/reciba verificación
-            $table->string('verification_token', 100)->nullable()->after('rol');
-            // por defecto las cuentas nuevas NO están verificadas
-            $table->boolean('is_verified')->default(false)->after('verification_token');
+            // Solo crea la columna si NO existe
+            if (!Schema::hasColumn('users', 'verification_token')) {
+                $table->string('verification_token', 100)->nullable()->after('rol');
+                $table->index('verification_token');
+            }
 
-            // índice opcional para búsquedas rápidas por token
-            $table->index('verification_token');
+            // Solo crea la columna si NO existe
+            if (!Schema::hasColumn('users', 'is_verified')) {
+                $table->boolean('is_verified')->default(false)->after('verification_token');
+            }
         });
     }
 
@@ -30,8 +33,16 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropIndex(['verification_token']);
-            $table->dropColumn(['verification_token', 'is_verified']);
+            // Elimina el índice si existe
+            if (Schema::hasColumn('users', 'verification_token')) {
+                $table->dropIndex(['verification_token']);
+                $table->dropColumn('verification_token');
+            }
+
+            // Elimina la columna is_verified si existe
+            if (Schema::hasColumn('users', 'is_verified')) {
+                $table->dropColumn('is_verified');
+            }
         });
     }
 };

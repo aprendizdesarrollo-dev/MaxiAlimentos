@@ -1,31 +1,27 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\EmpleadoController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\ResetPasswordController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\VerificationController;
 
-//RUTA AUTENTICACION JWT 
+// RUTAS DE LOGUEO
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
-Route::get('/me', [AuthController::class, 'me'])->middleware('auth:api');
 
-// RUTA DE RECUPERACION DE CONTRASEÑA
+Route::middleware('auth.jwt')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);});
+
+//RUTAS DE RESTABLECER CONTRASEÑA    
 
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
-
-// Enviar enlace de restablecimiento de contraseña
-
-Route::post('/password/forgot', [ForgotPasswordController::class, 'sendResetLinkEmail']);
-
-// Mostrar formulario de restablecer contraseña (si lo pruebas en navegador)
-
-Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm']);
-
-// Guardar nueva contraseña
-
 Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
+
+
+//RUTA DE VERIFICACION DE CORREO
+
+Route::post('/register-temp', [VerificationController::class, 'sendCode']);
+Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);

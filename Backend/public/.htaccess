@@ -5,11 +5,11 @@
 
     RewriteEngine On
 
-    # Handle Authorization Header
+    # 🔥 FIX PARA JWT: permitir pasar Authorization a PHP
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Handle X-XSRF-Token Header
+    # 🔒 FIX PARA CSRF TOKEN (si usas XSRF)
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
