@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api"; // 👈 importamos el cliente axios
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -12,36 +13,29 @@ function Login() {
     setError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await api.post("/login", { correo, password }); //usamos api.js
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
+      if (response.data.success) {
+        //guarda el token
+        localStorage.setItem("token", response.data.access_token);
         navigate("/dashboard");
       } else {
-        setError(data.error || "Credenciales incorrectas");
+        setError(response.data.message || "Credenciales incorrectas");
       }
     } catch (err) {
-      setError("Error al conectar con el servidor");
+      if (err.response) {
+        setError(err.response.data.message || "Error de autenticación");
+      } else {
+        setError("Error al conectar con el servidor");
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5FA15E] to-[#397C3C] px-4">
       <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8 relative">
-
-        {/* 🔹 Aquí va el logo de la empresa */}
         <div className="flex justify-center mb-6">
-          <img
-            src="/assets/logo.png"
-            alt="Logo MaxiAlimentos"
-            className="w-32 h-auto"
-          />
+          <img src="/assets/logo.png" alt="Logo MaxiAlimentos" className="w-32 h-auto" />
         </div>
 
         <h2 className="text-2xl font-bold text-center text-[#397C3C] mb-4">
@@ -55,8 +49,8 @@ function Login() {
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#5FA15E] outline-none"
               placeholder="tu@maxialimentos.com"
               required
@@ -77,9 +71,7 @@ function Login() {
             />
           </div>
 
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
@@ -94,7 +86,6 @@ function Login() {
             ¿Olvidaste tu contraseña?
           </a>
         </p>
-
 
         <p className="text-center text-gray-600 mt-6">
           ¿No tienes cuenta?{" "}
