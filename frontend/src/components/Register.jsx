@@ -3,7 +3,7 @@
  * --------------------------------------------------------
  * Registro corporativo de empleados (React + Laravel API)
  * Permite crear usuarios con datos laborales:
- *  - Nombre, correo, contraseña
+ *  - Nombre, correo, contraseña + confirmación
  *  - Cédula, cargo, área
  *
  * Envía la información al endpoint:
@@ -11,152 +11,152 @@
  *
  * Autor: Gonzo & Ricardo 😎
  */
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 export default function Register() {
-  // --------------------------------------------
-  // Estados del formulario
-  // --------------------------------------------
-  const [form, setForm] = useState({
-    nombre: "",
-    correo: "",
-    password: "",
-    cedula: "",
-    cargo: "",
-    area: "",
-  });
-
-  const [msg, setMsg] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // --------------------------------------------
-  // Capturar cambios de los inputs
-  // --------------------------------------------
+  const [form, setForm] = useState({
+    nombre: "",
+    cedula: "",
+    correo: "",
+    cargo: "",
+    area: "",
+    password: "",
+    password_confirmation: "",
+  });
+
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // --------------------------------------------
-  // Enviar datos a Laravel API
-  // --------------------------------------------
-  const handleRegister = async (e) => {
+  // Validar dominio del correo
+  const validarCorreo = (correo) => correo.endsWith("@maxialimentos.com");
+
+  // Validar contraseña
+  const validarPassword = (password) => {
+    const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return regex.test(password);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMsg("");
-    setLoading(true);
+    setMensaje("");
+    setError("");
+
+    if (!validarCorreo(form.correo)) {
+      return setError("El correo debe pertenecer al dominio @maxialimentos.com");
+    }
+
+    if (!validarPassword(form.password)) {
+      return setError("La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.");
+    }
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/register", form);
+      const response = await axios.post("http://127.0.0.1:8000/api/register-temp", form);
 
-      if (res.data.success) {
-        setMsg("✅ Registro exitoso. Redirigiendo al login...");
-        setTimeout(() => navigate("/login"), 2000);
+      if (response.data.success) {
+        setMensaje("Código enviado al correo. Redirigiendo a verificación...");
+        setTimeout(() => navigate("/verify-code", { state: { correo: form.correo } }), 2000);
       } else {
-        setMsg("⚠️ No se pudo registrar el usuario.");
+        setError("No se pudo enviar el código. Intenta de nuevo.");
       }
     } catch (err) {
-      setMsg("❌ Error al registrar. Verifica los datos.");
-    } finally {
-      setLoading(false);
+      console.error(err);
+      const msg = err.response?.data?.message || "Error al registrarte.";
+      setError(msg);
     }
   };
 
-  // --------------------------------------------
-  // Render del componente
-  // --------------------------------------------
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-[#397C3C] to-[#2b5d2b]">
+      <div className="bg-white shadow-2xl rounded-2xl p-10 w-[90%] md:w-[500px] text-center">
         {/* Logo */}
-        <img
-          src="/assets/logo.png"
-          alt="Logo MaxiAlimentos"
-          style={styles.logo}
-        />
+        <div className="flex justify-center mb-5">
+          <img src={logo} alt="MaxiAlimentos Logo" className="w-28 h-auto" />
+        </div>
 
-        <h2 style={styles.title}>Registro de Empleados</h2>
+        <h1 className="text-2xl font-bold text-[#397C3C] mb-4">Crear cuenta empresarial</h1>
+        <p className="text-gray-600 mb-6">Completa tus datos para crear una cuenta en la intranet.</p>
 
-        {msg && <div style={styles.alert}>{msg}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+          {["nombre", "cedula", "cargo", "area"].map((campo) => (
+            <div key={campo}>
+              <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">
+                {campo}
+              </label>
+              <input
+                type="text"
+                name={campo}
+                value={form[campo]}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
+              />
+            </div>
+          ))}
 
-        <form onSubmit={handleRegister} style={styles.form}>
-          <input
-            type="text"
-            name="nombre"
-            placeholder="Nombre completo"
-            value={form.nombre}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Correo institucional</label>
+            <input
+              type="email"
+              name="correo"
+              value={form.correo}
+              onChange={handleChange}
+              required
+              placeholder="ejemplo@maxialimentos.com"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
+            />
+          </div>
 
-          <input
-            type="email"
-            name="correo"
-            placeholder="Correo institucional"
-            value={form.correo}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Debe tener mínimo 8 caracteres, una mayúscula y un número.
+            </p>
+          </div>
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            value={form.password}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Confirmar contraseña</label>
+            <input
+              type="password"
+              name="password_confirmation"
+              value={form.password_confirmation}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
+            />
+          </div>
 
-          <input
-            type="text"
-            name="cedula"
-            placeholder="Número de cédula"
-            value={form.cedula}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-
-          <input
-            type="text"
-            name="cargo"
-            placeholder="Cargo (Ej: Operario, Contador...)"
-            value={form.cargo}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-
-          <input
-            type="text"
-            name="area"
-            placeholder="Área (Ej: Producción, Comercial...)"
-            value={form.area}
-            onChange={handleChange}
-            required
-            style={styles.input}
-          />
-
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? "Registrando..." : "Registrar"}
+          <button
+            type="submit"
+            className="w-full bg-[#397C3C] text-white py-3 rounded-lg font-semibold hover:bg-[#2f662f] transition-all"
+          >
+            Registrarme
           </button>
         </form>
 
-        <p style={{ marginTop: "15px" }}>
-          ¿Ya tienes una cuenta?{" "}
-          <a href="/login" style={styles.link}>
-            Inicia sesión
-          </a>
-        </p>
+        {mensaje && <p className="mt-5 text-green-600 font-medium">{mensaje}</p>}
+        {error && <p className="mt-5 text-red-600 font-medium">{error}</p>}
       </div>
     </div>
   );
 }
+
 
 /* ------------------------------------------------------
    🎨 Estilos en línea (CSS-in-JS)

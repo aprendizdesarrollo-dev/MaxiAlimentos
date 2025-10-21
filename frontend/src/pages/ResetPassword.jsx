@@ -17,11 +17,11 @@ export default function ResetPassword() {
   // Token + email desde URL
   const { token } = useParams();
   const [searchParams] = useSearchParams();
-  const emailParam = searchParams.get("email");
+  const emailParam = searchParams.get("correo");
 
   // Datos del formulario
   const [form, setForm] = useState({
-    email: emailParam || "",
+    correo: emailParam || "",
     password: "",
     password_confirmation: "",
   });
@@ -51,8 +51,10 @@ export default function ResetPassword() {
 
     try {
       const res = await axios.post("http://127.0.0.1:8000/api/password/reset", {
-        ...form,
-        token,
+           correo: form.correo,
+           password: form.password,
+           password_confirmation: form.password_confirmation,
+           token: token,
       });
 
       if (res.data.success) {
@@ -91,9 +93,9 @@ export default function ResetPassword() {
           <div style={styles.formGroup}>
             <label style={styles.label}>Correo electrónico</label>
             <input
-              type="email"
-              name="email"
-              value={form.email}
+              type="correo"
+              name="correo"
+              value={form.correo}
               onChange={handleChange}
               required
               style={styles.input}
