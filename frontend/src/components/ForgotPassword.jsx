@@ -12,102 +12,65 @@
  * - Muestra mensajes de éxito o error según la respuesta.
  */
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import axios from "axios";
 
-function ForgotPassword() {
-  // 🔹 Estados para manejar los datos del formulario y los mensajes
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+export default function ForgotPassword() {
+  const [correo, setCorreo] = useState("");
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
 
-  // 🔹 Maneja el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-    setError("");
+    setMsg("");
+    setErr("");
 
     try {
-      // Envío de datos al backend (endpoint de Laravel)
-      const response = await fetch("http://127.0.0.1:8000/api/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const res = await axios.post("http://127.0.0.1:8000/api/forgot-password", {
+        correo,
       });
 
-      const data = await response.json();
-
-      // ✅ Si el backend responde correctamente
-      if (response.ok) {
-        setMessage(data.message || "Revisa tu correo para continuar.");
-        setEmail("");
+      if (res.data.success) {
+        setMsg(res.data.message);
       } else {
-        setError(data.error || "No se encontró una cuenta con ese correo.");
+        setErr(res.data.message);
       }
-    } catch (err) {
-      setError("Error de conexión con el servidor.");
+    } catch (error) {
+      const apiError = error.response?.data?.message || "Error interno del servidor.";
+      setErr(apiError);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5FA15E] to-[#397C3C] px-4">
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
-        
-        {/* 🔹 Logo corporativo */}
-        <div className="flex justify-center mb-6">
-          <img
-            src="/assets/logo.png"
-            alt="Logo MaxiAlimentos"
-            className="w-32 h-auto"
+    <div className="flex justify-center items-center h-screen bg-green-700">
+      <div className="bg-white shadow-lg p-10 rounded-2xl w-[90%] md:w-[420px] text-center">
+        <img src="../assets/logo.png" alt="Logo MaxiAlimentos" className="mx-auto mb-6 w-32" />
+        <h2 className="text-2xl font-bold text-green-700 mb-4">Recuperar Contraseña</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Correo institucional"
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
+            required
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-600"
           />
-        </div>
-
-        {/* 🔹 Título */}
-        <h2 className="text-2xl font-bold text-center text-[#397C3C] mb-4">
-          Recuperar Contraseña
-        </h2>
-
-        {/* 🔹 Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Correo electrónico
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#5FA15E] outline-none"
-              placeholder="tu@maxialimentos.com"
-              required
-            />
-          </div>
-
-          {/* 🔹 Mensajes dinámicos */}
-          {message && (
-            <p className="text-green-600 text-sm text-center">{message}</p>
-          )}
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-          {/* 🔹 Botón principal */}
           <button
             type="submit"
-            className="w-full bg-[#397C3C] hover:bg-[#5FA15E] text-white py-2 rounded-lg font-semibold transition duration-300"
+            className="w-full bg-green-700 text-white py-3 rounded-lg hover:bg-green-800 transition-all"
           >
             Enviar enlace
           </button>
         </form>
 
-        {/* 🔹 Enlace de retorno */}
-        <p className="text-center text-gray-600 mt-6">
-          ¿Recordaste tu contraseña?{" "}
-          <Link to="/login" className="text-[#397C3C] hover:underline">
-            Inicia sesión
-          </Link>
+        {msg && <p className="mt-4 text-green-600 font-medium">{msg}</p>}
+        {err && <p className="mt-4 text-red-600 font-medium">{err}</p>}
+
+        <p className="mt-6 text-sm text-gray-600">
+          ¿Recordaste tu contraseña? <a href="/login" className="text-green-700 font-semibold">Inicia sesión</a>
         </p>
       </div>
     </div>
   );
 }
-
-export default ForgotPassword;

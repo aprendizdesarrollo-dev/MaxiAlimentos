@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login.jsx';
-import Register from './components/Register.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import ForgotPassword from './components/ForgotPassword.jsx';
-import ResetPassword from "./pages/ResetPassword";
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./components/Login.jsx";
+import Register from "./components/Register.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import ForgotPassword from "./components/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import VerifyCode from "./pages/VerifyCode.jsx";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-
+        <Route path="/verify-code" element={<VerifyCode />} />
       </Routes>
     </Router>
   );

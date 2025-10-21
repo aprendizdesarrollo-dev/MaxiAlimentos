@@ -7,7 +7,7 @@
 
 @layer base {
   body {
-    background-color: var(--color-gray-100);
+    background-color: #007B2D;
     color: var(--color-gray-900);
   }
 }
