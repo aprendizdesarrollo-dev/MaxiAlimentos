@@ -261,6 +261,14 @@ return [
     |
     */
 
+        /*
+    |--------------------------------------------------------------------------
+    | Providers
+    |--------------------------------------------------------------------------
+    |
+    | Specify the various providers used throughout the package.
+    |
+    */
     'providers' => [
 
         /*
@@ -271,7 +279,6 @@ return [
         | Specify the provider that is used to create and decode the tokens.
         |
         */
-
         'jwt' => Tymon\JWTAuth\Providers\JWT\Lcobucci::class,
 
         /*
@@ -282,7 +289,6 @@ return [
         | Specify the provider that is used to authenticate users.
         |
         */
-
         'auth' => Tymon\JWTAuth\Providers\Auth\Illuminate::class,
 
         /*
@@ -293,9 +299,21 @@ return [
         | Specify the provider that is used to store tokens in the blacklist.
         |
         */
-
         'storage' => Tymon\JWTAuth\Providers\Storage\Illuminate::class,
-
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | User model and identifier
+    |--------------------------------------------------------------------------
+    | 🔥 Configura el modelo y el campo de login personalizado
+    |--------------------------------------------------------------------------
+    */
+    'user' => App\Models\User::class,
+    'identifier' => 'correo',
+
 ];
+
+
+
+
