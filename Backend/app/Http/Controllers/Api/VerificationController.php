@@ -14,7 +14,7 @@ use Carbon\Carbon;
 class VerificationController extends Controller
 {
     /**
-     * 1️⃣ Envía el código al correo y guarda los datos temporalmente (sin crear el usuario aún)
+     * Envía el código al correo y guarda los datos temporalmente (sin crear el usuario aún)
      */
     public function sendCode(Request $request)
     {
@@ -51,7 +51,7 @@ class VerificationController extends Controller
     }
 
     /**
-     * 2️⃣ Verifica el código y crea el usuario en la base de datos.
+     * Verifica el código y crea el usuario en la base de datos.
      */
     public function verifyCode(Request $request)
     {
@@ -87,7 +87,7 @@ class VerificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => '✅ Correo verificado y usuario creado correctamente.',
+            'message' => 'Correo verificado y usuario creado correctamente.',
             'user' => $user,
         ]);
     }

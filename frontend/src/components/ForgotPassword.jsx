@@ -1,12 +1,12 @@
 /**
- * 📄 Componente: ForgotPassword.jsx
+ *  Componente: ForgotPassword.jsx
  * ---------------------------------
  * Este componente muestra un formulario sencillo para que el usuario escriba
  * su correo y reciba el enlace de recuperación de contraseña.
  * 
- * 🔗 Conecta al endpoint Laravel: POST /api/forgot-password
+ *  Conecta al endpoint Laravel: POST /api/forgot-password
  * 
- * 🧠 Funcionalidad:
+ *  Funcionalidad:
  * - Valida el email ingresado.
  * - Envía la solicitud al backend.
  * - Muestra mensajes de éxito o error según la respuesta.
@@ -41,36 +41,61 @@ export default function ForgotPassword() {
     }
   };
 
-  return (
-    <div className="flex justify-center items-center h-screen bg-green-700">
-      <div className="bg-white shadow-lg p-10 rounded-2xl w-[90%] md:w-[420px] text-center">
-        <img src="../assets/logo.png" alt="Logo MaxiAlimentos" className="mx-auto mb-6 w-32" />
-        <h2 className="text-2xl font-bold text-green-700 mb-4">Recuperar Contraseña</h2>
+return (
+  <section className="min-h-screen flex items-center justify-center bg-[#0D2611] px-4 py-10 relative overflow-hidden">
+    {/* Fondo con luz radial suave */}
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(57,124,60,0.15)_0%,transparent_70%)]"></div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Correo institucional"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            required
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-600"
-          />
-          <button
-            type="submit"
-            className="w-full bg-green-700 text-white py-3 rounded-lg hover:bg-green-800 transition-all"
-          >
-            Enviar enlace
-          </button>
-        </form>
+    {/* Contenedor del cuadro */}
+    <div className="relative z-10 bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md text-center transition-all duration-300 hover:shadow-[#397C3C]/30">
+      {/* Logo */}
+      <img
+        src="../assets/logo.png"
+        alt="Logo MaxiAlimentos"
+        className="mx-auto mb-6 w-32"
+      />
 
-        {msg && <p className="mt-4 text-green-600 font-medium">{msg}</p>}
-        {err && <p className="mt-4 text-red-600 font-medium">{err}</p>}
+      <h2 className="text-2xl font-bold text-[#397C3C] mb-3">
+        Recuperar Contraseña
+      </h2>
+      <p className="text-gray-600 mb-6 text-sm">
+        Ingresa tu correo institucional para recibir un enlace de recuperación.
+      </p>
 
-        <p className="mt-6 text-sm text-gray-600">
-          ¿Recordaste tu contraseña? <a href="/login" className="text-green-700 font-semibold">Inicia sesión</a>
-        </p>
-      </div>
+      {/* Formulario */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="email"
+          placeholder="tu@maxialimentos.com"
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
+          required
+          className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+        />
+        <button
+          type="submit"
+          className="w-full bg-[#397C3C] hover:bg-[#5FA15E] text-white py-3 rounded-lg font-semibold transition-all duration-300"
+        >
+          Enviar enlace
+        </button>
+      </form>
+
+      {/* Mensajes */}
+      {msg && <p className="mt-5 text-green-600 font-medium">{msg}</p>}
+      {err && <p className="mt-5 text-red-600 font-medium">{err}</p>}
+
+      {/* Enlace volver */}
+      <p className="mt-6 text-sm text-gray-600">
+        ¿Recordaste tu contraseña?{" "}
+        <a
+          href="/login"
+          className="text-[#397C3C] font-semibold hover:underline"
+        >
+          Inicia sesión
+        </a>
+      </p>
     </div>
-  );
-}
+  </section>
+);
+
+};

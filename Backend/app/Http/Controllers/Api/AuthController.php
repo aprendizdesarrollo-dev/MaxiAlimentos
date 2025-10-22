@@ -77,7 +77,7 @@ class AuthController extends Controller
      */
   public function login(Request $request)
 {
-    auth()->shouldUse('api'); // 🔥 Forzamos el guard de JWT
+    auth()->shouldUse('api'); 
 
     $credentials = $request->only('correo', 'password');
 
@@ -123,7 +123,7 @@ class AuthController extends Controller
      */
 public function me(Request $request)
 {
-    // 🔥 Forzar a JWTAuth a usar el guard correcto
+    // Forzar a JWTAuth a usar el guard correcto
     auth()->shouldUse('api');
 
     try {

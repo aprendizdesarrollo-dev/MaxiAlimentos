@@ -24,54 +24,78 @@ export default function VerifyCode() {
       });
 
       if (response.data.success) {
-        setMensaje("✅ Cuenta verificada correctamente. Serás redirigido al login...");
+        setMensaje("Cuenta verificada correctamente. Serás redirigido al login...");
         setTimeout(() => navigate("/login"), 2000);
       } else {
         setError("Código incorrecto o expirado.");
       }
     } catch (err) {
       console.error(err);
-      setError("❌ Error al verificar el código. Intenta nuevamente.");
+      setError("Error al verificar el código. Intenta nuevamente.");
     }
   };
 
-  return (
-    <div className="min-h-screen flex justify-center items-start pt-20 bg-gradient-to-b from-[#397C3C] to-[#2b5d2b]">
-      <div className="bg-white shadow-2xl rounded-2xl p-10 w-[90%] md:w-[450px] text-center">
-        {/* Logo */}
-        <div className="flex justify-center mb-5">
-          <img src={logo} alt="MaxiAlimentos" className="w-24 h-auto" />
-        </div>
+ return (
+  <section className="min-h-screen flex items-center justify-center bg-[#0D2611] px-4 py-16 relative overflow-hidden">
+    {/* Fondo con luz radial */}
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(57,124,60,0.15)_0%,transparent_70%)]"></div>
 
-        <h1 className="text-2xl font-bold text-[#397C3C] mb-3">
-          Verificar tu cuenta
-        </h1>
-        <p className="text-gray-600 mb-8">
-          Ingresa el código de verificación enviado a tu correo institucional.
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="text"
-            placeholder="Código de verificación"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            required
-            maxLength={6}
-            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C] text-center text-xl tracking-widest"
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-[#397C3C] text-white py-3 rounded-lg font-semibold hover:bg-[#2f662f] transition-all"
-          >
-            Confirmar código
-          </button>
-        </form>
-
-        {mensaje && <p className="mt-5 text-green-600 font-medium">{mensaje}</p>}
-        {error && <p className="mt-5 text-red-600 font-medium">{error}</p>}
+    {/* Cuadro principal */}
+    <div className="relative z-10 bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md text-center transition-all duration-300 hover:shadow-[#397C3C]/30">
+      {/* Logo */}
+      <div className="flex justify-center mb-6">
+        <img src={logo} alt="MaxiAlimentos" className="w-28 h-auto" />
       </div>
+
+      {/* Título */}
+      <h1 className="text-2xl font-bold text-[#397C3C] mb-3">
+        Verificar tu cuenta
+      </h1>
+      <p className="text-gray-600 mb-6 text-sm">
+        Ingresa el código de verificación que enviamos a tu correo institucional.
+      </p>
+
+      {/* Formulario */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <input
+          type="text"
+          placeholder="Código de verificación"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          required
+          maxLength={6}
+          className="w-full border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-[#397C3C] text-center text-2xl tracking-[0.5em] font-semibold text-gray-800"
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-[#397C3C] hover:bg-[#5FA15E] text-white py-3 rounded-lg font-semibold transition-all duration-300"
+        >
+          Confirmar código
+        </button>
+      </form>
+
+      {/* Mensajes */}
+      {mensaje && (
+        <p className="mt-5 text-green-600 font-medium">{mensaje}</p>
+      )}
+      {error && (
+        <p className="mt-5 text-red-600 font-medium">{error}</p>
+      )}
+
+      {/* Enlace volver */}
+      <p className="mt-6 text-sm text-gray-600">
+        ¿No recibiste el código?{" "}
+        <button
+          type="button"
+          onClick={reenviarCodigo}
+          className="text-[#397C3C] font-semibold hover:underline"
+        >
+          Reenviar código
+        </button>
+      </p>
     </div>
-  );
+  </section>
+);
+
 }
