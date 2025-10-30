@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\VerificationController;
+use App\Http\Controllers\Api\LoginGoogleController;
+use App\Http\Controllers\Api\UserController;
 
 // RUTAS DE LOGUEO
 
@@ -14,6 +16,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth.jwt')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);});
+
+Route::post('/google-login', [LoginGoogleController::class, 'login']);
+Route::middleware('auth:api')->put('/user/update', [UserController::class, 'update']);
+
 
 //RUTAS DE RESTABLECER CONTRASEÑA    
 

@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
+    use Notifiable;
+
     protected $table = 'users';
 
     protected $fillable = [
@@ -19,20 +22,15 @@ class User extends Authenticatable implements JWTSubject
         'rol',
         'is_verified',
         'verification_token',
+        'email_verified_at',
     ];
-    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * 🔥 Le decimos a Laravel que el campo para login es 'correo'
-     */
-    public function getAuthIdentifierName()
-    {
-        return 'correo';
-    }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    /**
-     * Métodos requeridos por JWT
-     */
+    // Métodos requeridos por JWT
     public function getJWTIdentifier()
     {
         return $this->getKey();

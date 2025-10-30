@@ -4,52 +4,63 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     /**
-     * Actualiza los datos del perfil del usuario autenticado.
+     * ✅ Actualiza los datos del perfil del usuario autenticado.
      * Ruta: PUT /api/user/update
      */
     public function update(Request $request)
     {
-        // 1️⃣ Verificar si hay un usuario autenticado
-        $user = auth()->user();
+        try {
+            // 🔐 Autenticamos al usuario usando el token JWT
+            $user = JWTAuth::parseToken()->authenticate();
 
-        if (!$user) {
+            // 🧩 Validar los campos requeridos
+            $validator = Validator::make($request->all(), [
+                'cedula' => 'required|string|max:20',
+                'cargo'  => 'required|string|max:100',
+                'area'   => 'required|string|max:100',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Datos inválidos',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            // 🧱 Actualizar los datos del usuario
+            $user->update([
+                'cedula' => $request->input('cedula'),
+                'cargo'  => $request->input('cargo'),
+                'area'   => $request->input('area'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Perfil actualizado correctamente',
+                'user' => $user,
+            ]);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sesión expirada o token inválido'
+                'message' => 'Token expirado, inicia sesión nuevamente.',
             ], 401);
-        }
-
-        // 2️⃣ Validar los campos del formulario
-        $validator = Validator::make($request->all(), [
-            'cedula' => 'required|string|max:20',
-            'cargo' => 'required|string|max:50',
-            'area' => 'required|string|max:50',
-        ]);
-
-        if ($validator->fails()) {
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Datos inválidos',
-                'errors' => $validator->errors()
-            ], 422);
+                'message' => 'Token inválido.',
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el perfil: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // 3️⃣ Actualizar la información
-        $user->cedula = $request->cedula;
-        $user->cargo = $request->cargo;
-        $user->area = $request->area;
-        $user->save();
-
-        // 4️⃣ Responder con éxito
-        return response()->json([
-            'success' => true,
-            'message' => 'Perfil actualizado correctamente',
-            'user' => $user
-        ]);
     }
 }

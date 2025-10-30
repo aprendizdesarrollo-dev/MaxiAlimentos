@@ -1,85 +1,120 @@
-import api from "../services/api";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 function CompletarPerfil() {
+  // 🧩 Estados de los campos
   const [cedula, setCedula] = useState("");
   const [cargo, setCargo] = useState("");
   const [area, setArea] = useState("");
+  const [mensaje, setMensaje] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMensaje(""); // ✅ Se corrige el setError → setMensaje
+
     try {
-      const response = await api.put("/user/update", {
-        cedula,
-        cargo,
-        area,
-      });
+      const token = localStorage.getItem("token");
+
+      // 🚀 Enviar datos al backend
+      const response = await api.put(
+        "/user/update",
+        {
+          cedula,
+          cargo,
+          area,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.data.success) {
-        alert("✅ Perfil actualizado correctamente");
-        navigate("/dashboard");
+        setMensaje("✅ Perfil actualizado correctamente.");
+        // Redirigir al dashboard tras unos segundos
+        setTimeout(() => navigate("/dashboard"), 1500);
       } else {
-        alert("⚠️ No se pudo actualizar el perfil");
+        setMensaje("❌ " + (response.data.message || "Error al actualizar perfil."));
       }
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        alert("⚠️ Sesión expirada, vuelve a iniciar sesión");
-        localStorage.removeItem("token");
-        navigate("/login");
-      } else {
-        console.error("Error al actualizar:", error);
-        alert("Error interno al guardar los datos");
-      }
+    } catch (err) {
+      console.error("Error en la conexión:", err);
+      setMensaje("❌ Error al conectar con el servidor.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f9f9f9]">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded-2xl p-8 max-w-md w-full"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-[#397C3C] text-center">
+    <section className="min-h-screen flex items-center justify-center bg-[#0D2611] px-4 py-10">
+      <div className="bg-white rounded-3xl shadow-2xl p-10 max-w-md w-full">
+        <h2 className="text-2xl font-bold text-[#397C3C] mb-4 text-center">
           Completa tu perfil
         </h2>
+        <p className="text-gray-600 text-center mb-6">
+          Agrega tu cédula, cargo y área dentro de MaxiAlimentos.
+        </p>
 
-        <label className="block mb-2">Cédula:</label>
-        <input
-          type="text"
-          value={cedula}
-          onChange={(e) => setCedula(e.target.value)}
-          required
-          className="w-full border rounded-lg px-3 py-2 mb-4"
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 🪪 Campo Cédula */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Cédula</label>
+            <input
+              type="text"
+              value={cedula}
+              onChange={(e) => setCedula(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#397C3C] outline-none"
+              placeholder="Ejemplo: 1034779802"
+              required
+            />
+          </div>
 
-        <label className="block mb-2">Cargo:</label>
-        <input
-          type="text"
-          value={cargo}
-          onChange={(e) => setCargo(e.target.value)}
-          required
-          className="w-full border rounded-lg px-3 py-2 mb-4"
-        />
+          {/* 💼 Campo Cargo */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Cargo</label>
+            <input
+              type="text"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#397C3C] outline-none"
+              placeholder="Ejemplo: Mesero"
+              required
+            />
+          </div>
 
-        <label className="block mb-2">Área:</label>
-        <input
-          type="text"
-          value={area}
-          onChange={(e) => setArea(e.target.value)}
-          required
-          className="w-full border rounded-lg px-3 py-2 mb-4"
-        />
+          {/* 🧠 Campo Área */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Área</label>
+            <input
+              type="text"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#397C3C] outline-none"
+              placeholder="Ejemplo: Tecnología"
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-[#397C3C] text-white py-2 rounded-lg hover:bg-[#4FA556] transition"
-        >
-          Guardar cambios
-        </button>
-      </form>
-    </div>
+          {/* Mensaje de éxito o error */}
+          {mensaje && (
+            <p
+              className={`text-center text-sm mt-2 ${
+                mensaje.includes("✅") ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {mensaje}
+            </p>
+          )}
+
+          {/* Botón Guardar */}
+          <button
+            type="submit"
+            className="w-full bg-[#397C3C] hover:bg-[#5FA15E] text-white py-2 rounded-lg font-semibold transition duration-300"
+          >
+            Guardar
+          </button>
+        </form>
+      </div>
+    </section>
   );
 }
 
