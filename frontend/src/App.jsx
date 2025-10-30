@@ -12,10 +12,13 @@ import CompletarPerfil from "./pages/CompletarPerfil.jsx";
 // 🧠 Google Login
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
+// 🔔 Toasts
+import { Toaster } from "react-hot-toast";
+
 // 📌 Componente de protección de rutas privadas
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" />;
+  return token ? children : <Navigate to="/login" replace />;
 }
 
 function App() {
@@ -27,7 +30,14 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/completar-perfil" element={<CompletarPerfil />} />
-          <Route path="/dashboard"element={<PrivateRoute><Dashboard /></PrivateRoute>}/>
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
@@ -40,6 +50,23 @@ function App() {
             }
           />
         </Routes>
+
+        {/* ✅ Toaster global para notificaciones */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              fontFamily: "Poppins, sans-serif",
+              fontSize: "0.9rem",
+            },
+            success: {
+              iconTheme: {
+                primary: "#397C3C",
+                secondary: "#fff",
+              },
+            },
+          }}
+        />
       </Router>
     </GoogleOAuthProvider>
   );

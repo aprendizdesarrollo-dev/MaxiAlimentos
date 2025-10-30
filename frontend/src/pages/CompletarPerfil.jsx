@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 function CompletarPerfil() {
-  // 🧩 Estados de los campos
+  // Estados de los campos
   const [cedula, setCedula] = useState("");
   const [cargo, setCargo] = useState("");
   const [area, setArea] = useState("");
@@ -13,12 +13,12 @@ function CompletarPerfil() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMensaje(""); // ✅ Se corrige el setError → setMensaje
+    setMensaje(""); // Se corrige el setError → setMensaje
 
     try {
       const token = localStorage.getItem("token");
 
-      // 🚀 Enviar datos al backend
+      // Enviar datos al backend
       const response = await api.put(
         "/user/update",
         {
@@ -32,15 +32,15 @@ function CompletarPerfil() {
       );
 
       if (response.data.success) {
-        setMensaje("✅ Perfil actualizado correctamente.");
+        setMensaje(" Perfil actualizado correctamente.");
         // Redirigir al dashboard tras unos segundos
         setTimeout(() => navigate("/dashboard"), 1500);
       } else {
-        setMensaje("❌ " + (response.data.message || "Error al actualizar perfil."));
+        setMensaje(" " + (response.data.message || "Error al actualizar perfil."));
       }
     } catch (err) {
       console.error("Error en la conexión:", err);
-      setMensaje("❌ Error al conectar con el servidor.");
+      setMensaje(" Error al conectar con el servidor.");
     }
   };
 
@@ -55,7 +55,7 @@ function CompletarPerfil() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* 🪪 Campo Cédula */}
+          {/*  Campo Cédula */}
           <div>
             <label className="block text-sm font-medium mb-1">Cédula</label>
             <input
@@ -63,12 +63,12 @@ function CompletarPerfil() {
               value={cedula}
               onChange={(e) => setCedula(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#397C3C] outline-none"
-              placeholder="Ejemplo: 1034779802"
+              placeholder="Numero de Identificación"
               required
             />
           </div>
 
-          {/* 💼 Campo Cargo */}
+          {/*  Campo Cargo */}
           <div>
             <label className="block text-sm font-medium mb-1">Cargo</label>
             <input
@@ -76,12 +76,12 @@ function CompletarPerfil() {
               value={cargo}
               onChange={(e) => setCargo(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#397C3C] outline-none"
-              placeholder="Ejemplo: Mesero"
+              placeholder="Ejemplo: Contador"
               required
             />
           </div>
 
-          {/* 🧠 Campo Área */}
+          {/* campo Área */}
           <div>
             <label className="block text-sm font-medium mb-1">Área</label>
             <input
@@ -89,7 +89,7 @@ function CompletarPerfil() {
               value={area}
               onChange={(e) => setArea(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#397C3C] outline-none"
-              placeholder="Ejemplo: Tecnología"
+              placeholder="Ejemplo: Mejora continua"
               required
             />
           </div>
@@ -98,7 +98,7 @@ function CompletarPerfil() {
           {mensaje && (
             <p
               className={`text-center text-sm mt-2 ${
-                mensaje.includes("✅") ? "text-green-600" : "text-red-600"
+                mensaje.includes("ok") ? "text-green-600" : "text-red-600"
               }`}
             >
               {mensaje}
