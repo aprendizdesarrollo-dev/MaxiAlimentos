@@ -1,66 +1,67 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
-function Dashboard() {
+// Dashboards por rol
+import AdminDashboard from "./AdminDashboard";
+import ComunicacionesDashboard from "./ComunicacionesDashboard";
+import RecursosHumanosDashboard from "./RecursosHumanosDashboard";
+import SoporteTIDashboard from "./SoporteTIDashboard";
+import LiderDashboard from "./LiderDashboard";
+import ColaboradorDashboard from "./ColaboradorDashboard";
+
+export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const res = await api.get("/me");
-      setUser(res.data);
-    } catch (err) {
-      console.error("Error de autenticación:", err);
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
-  };
-  fetchUser();
-}, [navigate]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/me");
+        setUser(res.data.user);
+      } catch (error) {
+        console.error("Error obteniendo usuario:", error);
+        localStorage.removeItem("token");
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [navigate]);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5]">
+        <h2 className="text-xl text-gray-600 font-medium">Cargando información...</h2>
+      </div>
+    );
+  }
 
-  const handleLogout = async () => {
-    try {
-      await api.post("/logout");
-    } catch (err) {
-      console.error("Error cerrando sesión:", err);
-    } finally {
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
-  };
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5]">
+        <h2 className="text-xl text-red-500 font-semibold">
+          No se pudo obtener la información del usuario.
+        </h2>
+      </div>
+    );
+  }
 
-  return (
-    <div style={{ padding: "40px", textAlign: "center", fontFamily: "Poppins" }}>
-      {user ? (
-        <>
-          <h1 style={{ color: "#397C3C" }}>Bienvenido, {user.nombre} 👋</h1>
-          <p>Correo: {user.correo}</p>
-          <p>Cargo: {user.cargo || "Sin cargo registrado"}</p>
-          <p>Área: {user.area || "Sin área registrada"}</p>
-
-          <button
-            onClick={handleLogout}
-            style={{
-              backgroundColor: "#397C3C",
-              color: "#fff",
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "8px",
-              marginTop: "20px",
-              cursor: "pointer",
-            }}
-          >
-            Cerrar sesión
-          </button>
-        </>
-      ) : (
-        <p>Cargando datos del usuario...</p>
-      )}
-    </div>
-  );
+  // ✅ Redirección a dashboard según el rol
+  switch (user.rol) {
+    case "Administrador":
+      return <AdminDashboard user={user} />;
+    case "Comunicaciones":
+      return <ComunicacionesDashboard user={user} />;
+    case "Recursos Humanos":
+      return <RecursosHumanosDashboard user={user} />;
+    case "Soporte TI":
+      return <SoporteTIDashboard user={user} />;
+    case "Líder de área":
+      return <LiderDashboard user={user} />;
+    default:
+      return <ColaboradorDashboard user={user} />;
+  }
 }
-
-export default Dashboard;
