@@ -2,18 +2,19 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 
-// 🧩 Componentes principales
+// Componentes principales
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import ForgotPassword from "./components/ForgotPassword.jsx";
 
-// 🧩 Páginas
+// Páginas
 import Dashboard from "./pages/Dashboard.jsx";
 import CompletarPerfil from "./pages/CompletarPerfil.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import VerifyCode from "./pages/VerifyCode.jsx";
+import CrearEvento from "./pages/CrearEvento";
 
-// 🧩 Dashboards por rol
+// Dashboards por rol
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ComunicacionesDashboard from "./pages/ComunicacionesDashboard.jsx";
 import RecursosHumanosDashboard from "./pages/RecursosHumanosDashboard.jsx";
@@ -21,7 +22,7 @@ import SoporteTIDashboard from "./pages/SoporteTIDashboard.jsx";
 import LiderDashboard from "./pages/LiderDashboard.jsx";
 import ColaboradorDashboard from "./pages/ColaboradorDashboard.jsx";
 
-// 🧩 Ruta privada (protege vistas con token)
+// Ruta privada (protege vistas con token)
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" replace />;
@@ -40,8 +41,9 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/verify-code" element={<VerifyCode />} />
+          <Route path="/crear-evento" element={<CrearEvento />} />
 
-          {/* 🔒 Rutas protegidas */}
+          {/*Rutas protegidas */}
           <Route
             path="/dashboard"
             element={
@@ -51,7 +53,7 @@ function App() {
             }
           />
 
-          {/* 🔒 Dashboards por rol */}
+          {/* Dashboards por rol */}
           <Route
             path="/admin"
             element={
@@ -101,7 +103,7 @@ function App() {
             }
           />
 
-          {/* ❌ Ruta 404 */}
+          {/* Ruta 404 */}
           <Route
             path="*"
             element={
@@ -112,7 +114,7 @@ function App() {
           />
         </Routes>
 
-        {/* ✅ Toaster global para notificaciones */}
+        {/* Toaster global para notificaciones */}
         <Toaster
           position="top-right"
           toastOptions={{

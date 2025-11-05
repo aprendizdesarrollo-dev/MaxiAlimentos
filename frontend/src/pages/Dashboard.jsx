@@ -21,20 +21,21 @@ export default function Dashboard() {
         const res = await api.get("/me");
         setUser(res.data.user);
       } catch (error) {
-        console.error("Error obteniendo usuario:", error);
+        console.error("Error al obtener usuario:", error);
         localStorage.removeItem("token");
-        navigate("/login");
-      } finally {
-        setLoading(false);
+        navigate("/login", { replace: true });
       }
     };
+
     fetchUser();
   }, [navigate]);
 
-  if (loading) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5]">
-        <h2 className="text-xl text-gray-600 font-medium">Cargando información...</h2>
+        <p className="text-[#397C3C] text-lg font-semibold animate-pulse">
+          Cargando información...
+        </p>
       </div>
     );
   }
@@ -49,7 +50,7 @@ export default function Dashboard() {
     );
   }
 
-  // ✅ Redirección a dashboard según el rol
+  // Redirección a dashboard según el rol
   switch (user.rol) {
     case "Administrador":
       return <AdminDashboard user={user} />;

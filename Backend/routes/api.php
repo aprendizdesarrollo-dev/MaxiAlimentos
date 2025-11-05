@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\LoginGoogleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\ComunicadosController;
+use App\Http\Controllers\API\EventoController;
 
 // RUTAS DE LOGUEO
 
@@ -46,3 +47,12 @@ Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
 
     // Acceso general autenticado
     Route::get('/comunicados', [ComunicadosController::class, 'index']);
+
+    // RUTA EVENTOS DASHBOARD ADMIN
+    
+    Route::get('/eventos', [EventoController::class, 'index']);
+    Route::post('/eventos', [EventoController::class, 'store']);
+    Route::get('/eventos/{id}', [EventoController::class, 'show']);
+    Route::put('/eventos/{id}', [EventoController::class, 'update']);
+    Route::delete('/eventos/{id}', [EventoController::class, 'destroy']);
+
