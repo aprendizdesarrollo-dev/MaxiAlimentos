@@ -3,27 +3,25 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Middleware\HandleCors; 
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
-        api: __DIR__ . '/../routes/api.php',
-        commands: __DIR__ . '/../routes/console.php',
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Middleware globales personalizados
+        // Aliases
         $middleware->alias([
-            'auth.jwt' => \App\Http\Middleware\JwtMiddleware::class,
-        ]);
+            'jwt.auth'    => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+            'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+            'role'        => \App\Http\Middleware\CheckRole::class,
 
-        //Agregar CORS NATIVO (Laravel 11+)
-        $middleware->api(prepend: [
-            HandleCors::class, 
+            // Alias para tu middleware de roles basado en users.rol
+            'role'        => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Puedes manejar excepciones globales aquí
-    })
-    ->create();
+        //
+    })->create();

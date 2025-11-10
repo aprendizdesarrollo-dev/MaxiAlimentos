@@ -1,66 +1,57 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
-function Dashboard() {
+// Importar dashboards
+import AdminDashboard from "./AdminDashboard";
+import ColaboradorDashboard from "./ColaboradorDashboard";
+
+export default function Dashboard() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const res = await api.get("/me");
-      setUser(res.data);
-    } catch (err) {
-      console.error("Error de autenticación:", err);
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
-  };
-  fetchUser();
-}, [navigate]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/me");
+        setUser(res.data.user);
+      } catch (error) {
+        console.error("Error al obtener usuario:", error);
+        localStorage.removeItem("token");
+        navigate("/login", { replace: true });
+      }
+    };
 
+    fetchUser();
+  }, [navigate]);
 
-  const handleLogout = async () => {
-    try {
-      await api.post("/logout");
-    } catch (err) {
-      console.error("Error cerrando sesión:", err);
-    } finally {
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
-  };
+  // Estado de carga mientras se obtiene el usuario
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5]">
+        <p className="text-[#397C3C] text-lg font-semibold animate-pulse">
+          Cargando información...
+        </p>
+      </div>
+    );
+  }
 
-  return (
-    <div style={{ padding: "40px", textAlign: "center", fontFamily: "Poppins" }}>
-      {user ? (
-        <>
-          <h1 style={{ color: "#397C3C" }}>Bienvenido, {user.nombre} 👋</h1>
-          <p>Correo: {user.correo}</p>
-          <p>Cargo: {user.cargo || "Sin cargo registrado"}</p>
-          <p>Área: {user.area || "Sin área registrada"}</p>
+  // Si por alguna razón no hay datos válidos
+  if (!user.rol) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5]">
+        <h2 className="text-xl text-red-500 font-semibold">
+          No se pudo determinar el rol del usuario.
+        </h2>
+      </div>
+    );
+  }
 
-          <button
-            onClick={handleLogout}
-            style={{
-              backgroundColor: "#397C3C",
-              color: "#fff",
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "8px",
-              marginTop: "20px",
-              cursor: "pointer",
-            }}
-          >
-            Cerrar sesión
-          </button>
-        </>
-      ) : (
-        <p>Cargando datos del usuario...</p>
-      )}
-    </div>
-  );
+  // Redirección a dashboard según el rol
+  if (user.rol === "Administrador") {
+    return <AdminDashboard user={user} />;
+  }
+
+  // Todo usuario nuevo o estándar es "Empleado"
+  return <ColaboradorDashboard user={user} />;
 }
-
-export default Dashboard;

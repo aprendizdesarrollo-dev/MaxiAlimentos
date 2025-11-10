@@ -19,11 +19,9 @@ class JwtMiddleware
             config(['auth.defaults.guard' => 'api']);
             config(['auth.providers.users.model' => User::class]);
 
-            // 🔑 Obtenemos el payload del token
             $payload = JWTAuth::parseToken()->getPayload();
             $userId = $payload->get('sub'); // ID del usuario dentro del token
 
-            // 🧩 Buscamos el usuario manualmente en la base de datos
             $user = User::find($userId);
 
             if (!$user) {
@@ -34,7 +32,6 @@ class JwtMiddleware
                 ], 401);
             }
 
-            // ✅ Autenticamos manualmente
             auth()->login($user);
             $request->auth = $user;
 

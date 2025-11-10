@@ -2,10 +2,10 @@
  * Componente: ResetPassword.jsx
  * --------------------------------------------------------
  * Versión final funcional:
- *  ✅ Cada input tiene su propio ojo FaEye / FaEyeSlash.
- *  ✅ Sin manipular el DOM manualmente.
- *  ✅ React maneja el cambio de tipo dinámicamente.
- *  ✅ Estilo corporativo MaxiAlimentos.
+ *  Cada input tiene su propio ojo FaEye / FaEyeSlash.
+ *  Sin manipular el DOM manualmente.
+ *  React maneja el cambio de tipo dinámicamente.
+ *  Estilo corporativo MaxiAlimentos.
  */
 
 import { useState } from "react";
@@ -71,186 +71,129 @@ export default function ResetPassword() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        {/* Logo */}
-        <img
-          src="/assets/logo.png"
-          alt="Logo MaxiAlimentos"
-          style={styles.logo}
-        />
+  <section className="min-h-screen flex items-center justify-center bg-[#0D2611] relative px-4 overflow-hidden">
+    {/* Fondo con luz radial */}
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(57,124,60,0.15)_0%,transparent_70%)]"></div>
 
-        {/* Título */}
-        <h2 style={styles.title}>Restablecer Contraseña</h2>
+    {/* Cuadro blanco */}
+    <div className="relative z-10 bg-white shadow-2xl rounded-3xl p-10 w-full max-w-md text-center transition-all duration-300 hover:shadow-[#397C3C]/30">
+      {/* Logo */}
+      <img
+        src="/assets/logo.png"
+        alt="Logo MaxiAlimentos"
+        className="mx-auto mb-6 w-40"
+      />
 
-        {/* Mensajes */}
-        {message && <div style={{ ...styles.alert, ...styles.success }}>{message}</div>}
-        {error && <div style={{ ...styles.alert, ...styles.error }}>{error}</div>}
+      {/* Título */}
+      <h2 className="text-2xl font-bold text-[#397C3C] mb-4">
+        Restablecer Contraseña
+      </h2>
+      <p className="text-gray-600 text-sm mb-6">
+        Ingresa tu nueva contraseña para acceder nuevamente a la intranet.
+      </p>
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {/* Email */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Correo electrónico</label>
+      {/* Mensajes */}
+      {message && (
+        <div className="bg-green-100 text-green-700 rounded-lg py-2 px-3 mb-4 text-sm font-medium">
+          {message}
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-100 text-red-700 rounded-lg py-2 px-3 mb-4 text-sm font-medium">
+          {error}
+        </div>
+      )}
+
+      {/* Formulario */}
+      <form onSubmit={handleSubmit} className="space-y-5 text-left">
+        {/* Correo */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Correo electrónico
+          </label>
+          <input
+            type="email"
+            name="correo"
+            value={form.correo}
+            onChange={handleChange}
+            required
+            placeholder="tu@maxialimentos.com"
+            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+          />
+        </div>
+
+        {/* Nueva contraseña */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nueva contraseña
+          </label>
+          <div className="relative">
             <input
-              type="correo"
-              name="correo"
-              value={form.correo}
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={form.password}
               onChange={handleChange}
               required
-              style={styles.input}
+              placeholder="••••••••"
+              className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#397C3C]"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
+        </div>
 
-          {/* Nueva contraseña */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Nueva contraseña</label>
-            <div style={styles.passwordGroup}>
-              <input
-                type={showPassword ? "text" : "password"} // 🔥 React controla el tipo
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                style={styles.input}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)} // alterna el estado
-                style={styles.eyeButton}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
+        {/* Confirmar contraseña */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Confirmar contraseña
+          </label>
+          <div className="relative">
+            <input
+              type={showConfirm ? "text" : "password"}
+              name="password_confirmation"
+              value={form.password_confirmation}
+              onChange={handleChange}
+              required
+              placeholder="••••••••"
+              className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm(!showConfirm)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#397C3C]"
+            >
+              {showConfirm ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
+        </div>
 
-          {/* Confirmar contraseña */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Confirmar contraseña</label>
-            <div style={styles.passwordGroup}>
-              <input
-                type={showConfirm ? "text" : "password"} // 🔥 controlado por React
-                name="password_confirmation"
-                value={form.password_confirmation}
-                onChange={handleChange}
-                required
-                style={styles.input}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm(!showConfirm)} // alterna el segundo ojo
-                style={styles.eyeButton}
-              >
-                {showConfirm ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-          </div>
+        {/* Botón */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-[#397C3C] hover:bg-[#5FA15E] text-white py-3 rounded-lg font-semibold transition-all duration-300"
+        >
+          {loading ? "Guardando..." : "Actualizar contraseña"}
+        </button>
+      </form>
 
-          {/* Botón enviar */}
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? "Guardando..." : "Actualizar contraseña"}
-          </button>
-        </form>
-      </div>
+      {/* Enlace volver */}
+      <p className="mt-6 text-sm text-gray-600">
+        ¿Recordaste tu contraseña?{" "}
+        <a
+          href="/login"
+          className="text-[#397C3C] font-semibold hover:underline"
+        >
+          Inicia sesión
+        </a>
+      </p>
     </div>
-  );
-}
+  </section>
+);
 
-/* 🎨 Estilos en línea */
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    background: "linear-gradient(135deg, #397C3C, #5FA15E)",
-    fontFamily: "Poppins, sans-serif",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: "16px",
-    boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
-    padding: "40px 35px",
-    width: "380px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    animation: "fadeIn 0.6s ease",
-  },
-  logo: {
-    width: "200px",
-    marginBottom: "10px",
-  },
-  title: {
-    color: "#397C3C",
-    marginBottom: "25px",
-    fontWeight: "600",
-  },
-  alert: {
-    padding: "10px 15px",
-    borderRadius: "8px",
-    marginBottom: "15px",
-    fontSize: "14px",
-    fontWeight: "500",
-  },
-  success: {
-    backgroundColor: "#d4edda",
-    color: "#155724",
-  },
-  error: {
-    backgroundColor: "#f8d7da",
-    color: "#721c24",
-  },
-  form: {
-    width: "100%",
-    textAlign: "left",
-  },
-  formGroup: {
-    marginBottom: "18px",
-  },
-  label: {
-    display: "block",
-    color: "#333",
-    fontSize: "14px",
-    marginBottom: "6px",
-  },
-  input: {
-    width: "100%",
-    padding: "10px 36px 10px 10px", // espacio para el icono
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    outline: "none",
-    fontSize: "14px",
-    transition: "all 0.3s",
-  },
-  passwordGroup: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-  },
-  eyeButton: {
-    position: "absolute",
-    right: "10px",
-    background: "transparent",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "16px",
-    color: "#666",
-    top: "50%",
-    transform: "translateY(-50%)",
-    padding: 0,
-  },
-  button: {
-    width: "100%",
-    backgroundColor: "#397C3C",
-    color: "#fff",
-    padding: "10px",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "15px",
-    fontWeight: "600",
-    marginTop: "10px",
-    transition: "background 0.3s ease",
-  },
 };

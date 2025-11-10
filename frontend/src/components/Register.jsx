@@ -9,7 +9,7 @@
  * Envía la información al endpoint:
  *  POST http://127.0.0.1:8000/api/register
  *
- * Autor: Gonzo & Ricardo 😎
+ * Autor: Gonzo
  */
 import React, { useState } from "react";
 import axios from "axios";
@@ -19,12 +19,27 @@ import logo from "../assets/logo.png";
 export default function Register() {
   const navigate = useNavigate();
 
+  // Estado principal con todos los campos esperados por el backend
   const [form, setForm] = useState({
     nombre: "",
-    cedula: "",
+    segundo_nombre: "",
+    apellido: "",
+    genero: "",
+    fecha_nacimiento: "",
+    estado_civil: "",
+    telefono_personal: "",
     correo: "",
+    correo_corporativo: "",
+    correo_personal: "",
+    direccion: "",
+    ciudad: "",
+    departamento: "",
+    pais: "",
+    cedula: "",
     cargo: "",
     area: "",
+    jefe_directo: "",
+    rol: "Empleado", // Valor por defecto
     password: "",
     password_confirmation: "",
   });
@@ -32,197 +47,300 @@ export default function Register() {
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
 
+  // 🔹 Manejar cambios en todos los campos
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Validar dominio del correo
+  // 🔹 Validar dominio del correo
   const validarCorreo = (correo) => correo.endsWith("@maxialimentos.com");
 
-  // Validar contraseña
+  // 🔹 Validar formato de contraseña (mínimo 8, 1 mayúscula, 1 número)
   const validarPassword = (password) => {
     const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
     return regex.test(password);
   };
 
+  // 🔹 Enviar el formulario al backend (registro temporal)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje("");
     setError("");
 
+    // Validaciones básicas
     if (!validarCorreo(form.correo)) {
       return setError("El correo debe pertenecer al dominio @maxialimentos.com");
     }
 
     if (!validarPassword(form.password)) {
-      return setError("La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.");
+      return setError(
+        "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número."
+      );
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/register-temp", form);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/register-temp",
+        form
+      );
 
       if (response.data.success) {
         setMensaje("Código enviado al correo. Redirigiendo a verificación...");
         setTimeout(() => navigate("/verify-code", { state: { correo: form.correo } }), 2000);
       } else {
-        setError("No se pudo enviar el código. Intenta de nuevo.");
+        setError(response.data.message || "No se pudo enviar el código. Intenta de nuevo.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error al registrar:", err);
       const msg = err.response?.data?.message || "Error al registrarte.";
       setError(msg);
     }
   };
 
+  // 🔹 Resto del JSX (formulario + diseño) ...
+
+
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-[#397C3C] to-[#2b5d2b]">
-      <div className="bg-white shadow-2xl rounded-2xl p-10 w-[90%] md:w-[500px] text-center">
-        {/* Logo */}
-        <div className="flex justify-center mb-5">
-          <img src={logo} alt="MaxiAlimentos Logo" className="w-28 h-auto" />
-        </div>
+    <section className="min-h-screen flex items-center justify-center bg-[#0D2611] px-4 py-16">
+      {/* Cuadro blanco unificado */}
+      <div className="bg-white rounded-3xl shadow-2xl flex flex-col lg:flex-row overflow-hidden max-w-5xl w-full">
 
-        <h1 className="text-2xl font-bold text-[#397C3C] mb-4">Crear cuenta empresarial</h1>
-        <p className="text-gray-600 mb-6">Completa tus datos para crear una cuenta en la intranet.</p>
+        {/* Columna izquierda: Formulario de registro */}
+        <div className="w-full lg:w-1/2 p-10 flex flex-col justify-center">
+          {/* Logo */}
+          <div className="flex justify-center mb-5">
+            <img src={logo} alt="MaxiAlimentos Logo" className="w-28 h-auto" />
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-left">
-          {["nombre", "cedula", "cargo", "area"].map((campo) => (
-            <div key={campo}>
-              <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">
-                {campo}
-              </label>
-              <input
-                type="text"
-                name={campo}
-                value={form[campo]}
+          <h1 className="text-2xl font-bold text-[#397C3C] mb-4 text-center">
+            Crear cuenta empresarial
+          </h1>
+          <p className="text-gray-600 mb-6 text-center">
+            Completa tus datos para crear una cuenta en la intranet.
+          </p>
+
+          {/* Formulario */}
+          <form onSubmit={handleSubmit} className="space-y-4 text-left">
+            {/* Grupo: Datos personales */}
+            <h2 className="text-lg font-semibold text-[#397C3C] mt-4">Datos personales</h2>
+
+            {["nombre", "segundo_nombre", "apellido", "cedula"].map((campo) => (
+              <div key={campo}>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">
+                  {campo.replace("_", " ")}
+                </label>
+                <input
+                  type="text"
+                  name={campo}
+                  value={form[campo] || ""}
+                  onChange={handleChange}
+                  required={campo !== "segundo_nombre"}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+                />
+              </div>
+            ))}
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Género</label>
+              <select
+                name="genero"
+                value={form.genero || ""}
                 onChange={handleChange}
-                required
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+              >
+                <option value="">Seleccione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Fecha de nacimiento</label>
+              <input
+                type="date"
+                name="fecha_nacimiento"
+                value={form.fecha_nacimiento || ""}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
               />
             </div>
-          ))}
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Correo institucional</label>
-            <input
-              type="email"
-              name="correo"
-              value={form.correo}
-              onChange={handleChange}
-              required
-              placeholder="ejemplo@maxialimentos.com"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Estado civil</label>
+              <input
+                type="text"
+                name="estado_civil"
+                value={form.estado_civil || ""}
+                onChange={handleChange}
+                placeholder="Soltero, Casado..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
-            <input
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Debe tener mínimo 8 caracteres, una mayúscula y un número.
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Teléfono personal</label>
+              <input
+                type="text"
+                name="telefono_personal"
+                value={form.telefono_personal || ""}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+              />
+            </div>
+
+            {/* Grupo: Datos de contacto */}
+            <h2 className="text-lg font-semibold text-[#397C3C] mt-6">Datos de contacto</h2>
+
+            {/* Correo corporativo (obligatorio) */}
+            <div className="mt-3">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Correo corporativo
+              </label>
+              <input
+                type="email"
+                name="correo"
+                value={form.correo || ""}
+                onChange={handleChange}
+                required
+                placeholder="ejemplo@maxialimentos.com"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Este será tu usuario de acceso. Debe pertenecer al dominio <strong>@maxialimentos.com</strong>.
+              </p>
+            </div>
+
+            {/* Correo personal (opcional) */}
+            <div className="mt-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Correo personal (opcional)
+              </label>
+              <input
+                type="email"
+                name="correo_personal"
+                value={form.correo_personal || ""}
+                onChange={handleChange}
+                placeholder="tuemail@gmail.com"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+              />
+            </div>
+            
+            {["direccion", "ciudad", "departamento", "pais"].map((campo) => (
+              <div key={campo}>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">
+                  {campo}
+                </label>
+                <input
+                  type="text"
+                  name={campo}
+                  value={form[campo] || ""}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+                />
+              </div>
+            ))}
+
+            {/* Grupo: Datos laborales */}
+            <h2 className="text-lg font-semibold text-[#397C3C] mt-6">Datos laborales</h2>
+
+            {["cargo", "area", "jefe_directo"].map((campo) => (
+              <div key={campo}>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 capitalize">
+                  {campo.replace("_", " ")}
+                </label>
+                <input
+                  type="text"
+                  name={campo}
+                  value={form[campo] || ""}
+                  onChange={handleChange}
+                  required={campo !== "jefe_directo"}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+                />
+              </div>
+            ))}
+
+            {/* Grupo: Contraseña */}
+            <h2 className="text-lg font-semibold text-[#397C3C] mt-6">Seguridad</h2>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Debe tener mínimo 8 caracteres, una mayúscula y un número.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Confirmar contraseña
+              </label>
+              <input
+                type="password"
+                name="password_confirmation"
+                value={form.password_confirmation}
+                onChange={handleChange}
+                required
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397C3C]"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-[#397C3C] text-white py-3 rounded-lg font-semibold hover:bg-[#5FA15E] transition-all"
+            >
+              Enviar código de verificación
+            </button>
+          </form>
+
+          {/* Mensajes */}
+          {mensaje && (
+            <p className="mt-5 text-green-600 font-medium text-center">
+              {mensaje}
+            </p>
+          )}
+          {error && (
+            <p className="mt-5 text-red-600 font-medium text-center">
+              {error}
+            </p>
+          )}
+        </div>
+
+        {/* Separador vertical */}
+        <div className="hidden lg:block w-[1px] bg-gradient-to-b from-[#397C3C]/10 via-[#397C3C]/40 to-[#397C3C]/10"></div>
+
+        {/* Columna derecha: Fondo degradado y texto institucional */}
+        <div className="w-full lg:w-1/2 relative flex flex-col justify-center items-center overflow-hidden">
+          {/* Capa de fondo con degradado */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#E8F5E9] via-[#F9FFF9] to-[#E8F5E9]"></div>
+          {/* Luz radial suave */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(57,124,60,0.15)_0%,transparent_70%)]"></div>
+
+          {/* Contenido institucional */}
+          <div className="relative z-10 text-center p-10">
+            <h2 className="text-3xl font-bold mb-4 text-[#397C3C]">
+              Únete al equipo MaxiAlimentos.
+            </h2>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              Crea tu cuenta corporativa para acceder a herramientas internas,
+              reportes y recursos diseñados para el crecimiento de la empresa.
+            </p>
+            <p className="text-sm text-gray-500">
+              © 2025 MaxiAlimentos S.A.S. — Todos los derechos reservados.
             </p>
           </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Confirmar contraseña</label>
-            <input
-              type="password"
-              name="password_confirmation"
-              value={form.password_confirmation}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#397C3C]"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-[#397C3C] text-white py-3 rounded-lg font-semibold hover:bg-[#2f662f] transition-all"
-          >
-            Registrarme
-          </button>
-        </form>
-
-        {mensaje && <p className="mt-5 text-green-600 font-medium">{mensaje}</p>}
-        {error && <p className="mt-5 text-red-600 font-medium">{error}</p>}
+        </div>
       </div>
-    </div>
+    </section>
   );
-}
 
-
-/* ------------------------------------------------------
-   🎨 Estilos en línea (CSS-in-JS)
-   ------------------------------------------------------ */
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    background: "linear-gradient(135deg, #397C3C, #5FA15E)",
-    fontFamily: "Poppins, sans-serif",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: "16px",
-    boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
-    padding: "40px 35px",
-    width: "380px",
-    textAlign: "center",
-    animation: "fadeIn 0.6s ease",
-  },
-  logo: {
-    width: "150px",
-    display: "block",
-    margin: "0 auto 10px",
-  },
-  title: {
-    color: "#397C3C",
-    marginBottom: "25px",
-    fontWeight: "600",
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    marginBottom: "14px",
-    outline: "none",
-    fontSize: "14px",
-    transition: "all 0.3s ease",
-  },
-  button: {
-    width: "100%",
-    backgroundColor: "#397C3C",
-    color: "#fff",
-    padding: "10px",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    fontSize: "15px",
-    fontWeight: "600",
-    marginTop: "10px",
-    transition: "background 0.3s ease",
-  },
-  alert: {
-    backgroundColor: "#e6f5ea",
-    color: "#2b6c2f",
-    padding: "10px",
-    borderRadius: "8px",
-    fontSize: "14px",
-    marginBottom: "15px",
-  },
-  link: {
-    color: "#397C3C",
-    textDecoration: "none",
-    fontWeight: "600",
-  },
 };
