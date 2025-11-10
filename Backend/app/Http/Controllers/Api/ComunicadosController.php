@@ -4,54 +4,120 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Comunicado;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Carbon\Carbon;
 
 class ComunicadosController extends Controller
 {
     /**
-     * Lista general de comunicados (visible a todos los roles autenticados)
+     * 📄 Listar todos los comunicados
      */
     public function index()
     {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                ['id' => 1, 'titulo' => 'Actualización de protocolos de bioseguridad', 'autor' => 'Comunicaciones'],
-                ['id' => 2, 'titulo' => 'Reconocimiento a empleados destacados', 'autor' => 'Recursos Humanos'],
-            ]
-        ]);
+        try {
+            $comunicados = Comunicado::orderBy('created_at', 'desc')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $comunicados
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'descripcion' => 'Error al obtener los comunicados',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Crea un comunicado (solo Administrador o Comunicaciones)
+     * ➕ Crear un nuevo comunicado
      */
-    public function store(Request $request)
-    {
+public function store(Request $request)
+{
+    try {
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+        ]);
+
+        // Obtener usuario autenticado (para autor)
+        $user = auth()->user();
+
+        // Crear comunicado con fecha actual
+        $comunicado = \App\Models\Comunicado::create([
+            'titulo' => $request->titulo,
+            'descripcion' => $request->descripcion,
+            'autor' => $user ? $user->nombre : 'Administrador General',
+            'fecha' => now()->format('Y-m-d'),
+        ]);
+
         return response()->json([
             'success' => true,
-            'message' => 'Comunicado creado exitosamente',
-            'datos' => $request->all(),
+            'descripcion' => 'Comunicado creado correctamente',
+            'data' => $comunicado
         ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'descripcion' => 'Error al crear el comunicado',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     /**
-     * Actualiza un comunicado (solo Administrador o Comunicaciones)
+     * ✏️ Actualizar comunicado
      */
     public function update(Request $request, $id)
     {
-        return response()->json([
-            'success' => true,
-            'message' => "Comunicado #$id actualizado correctamente",
-        ]);
+        try {
+            $comunicado = Comunicado::findOrFail($id);
+
+            $request->validate([
+                'titulo' => 'required|string|max:255',
+                'descripcion' => 'required|string',
+            ]);
+
+            $comunicado->update([
+                'titulo' => $request->titulo,
+                'descripcion' => $request->descripcion,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comunicado actualizado correctamente',
+                'data' => $comunicado
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el comunicado',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Elimina un comunicado (solo Administrador o Comunicaciones)
+     * 🗑️ Eliminar comunicado
      */
     public function destroy($id)
     {
-        return response()->json([
-            'success' => true,
-            'message' => "Comunicado #$id eliminado",
-        ]);
+        try {
+            $comunicado = Comunicado::findOrFail($id);
+            $comunicado->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comunicado eliminado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar el comunicado',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

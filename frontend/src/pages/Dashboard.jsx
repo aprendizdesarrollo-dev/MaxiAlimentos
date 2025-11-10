@@ -2,17 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-// Dashboards por rol
+// Importar dashboards
 import AdminDashboard from "./AdminDashboard";
-import ComunicacionesDashboard from "./ComunicacionesDashboard";
-import RecursosHumanosDashboard from "./RecursosHumanosDashboard";
-import SoporteTIDashboard from "./SoporteTIDashboard";
-import LiderDashboard from "./LiderDashboard";
 import ColaboradorDashboard from "./ColaboradorDashboard";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +25,7 @@ export default function Dashboard() {
     fetchUser();
   }, [navigate]);
 
+  // Estado de carga mientras se obtiene el usuario
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5]">
@@ -40,29 +36,22 @@ export default function Dashboard() {
     );
   }
 
-  if (!user) {
+  // Si por alguna razón no hay datos válidos
+  if (!user.rol) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f5f5f5]">
         <h2 className="text-xl text-red-500 font-semibold">
-          No se pudo obtener la información del usuario.
+          No se pudo determinar el rol del usuario.
         </h2>
       </div>
     );
   }
 
   // Redirección a dashboard según el rol
-  switch (user.rol) {
-    case "Administrador":
-      return <AdminDashboard user={user} />;
-    case "Comunicaciones":
-      return <ComunicacionesDashboard user={user} />;
-    case "Recursos Humanos":
-      return <RecursosHumanosDashboard user={user} />;
-    case "Soporte TI":
-      return <SoporteTIDashboard user={user} />;
-    case "Líder de área":
-      return <LiderDashboard user={user} />;
-    default:
-      return <ColaboradorDashboard user={user} />;
+  if (user.rol === "Administrador") {
+    return <AdminDashboard user={user} />;
   }
+
+  // Todo usuario nuevo o estándar es "Empleado"
+  return <ColaboradorDashboard user={user} />;
 }

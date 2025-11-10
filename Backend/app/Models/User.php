@@ -14,18 +14,31 @@ class User extends Authenticatable implements JWTSubject
 
     protected $table = 'users';
 
-    protected $fillable = [
-        'nombre',
-        'correo',
-        'password',
-        'cedula',
-        'cargo',
-        'area',
-        'rol',
-        'is_verified',
-        'verification_token',
-        'email_verified_at',
-    ];
+   protected $fillable = [
+    'nombre',
+    'segundo_nombre',
+    'apellido',
+    'genero',
+    'fecha_nacimiento',
+    'estado_civil',
+    'telefono_personal',
+    'correo',
+    'correo_corporativo',
+    'correo_personal',
+    'direccion',
+    'ciudad',
+    'departamento',
+    'pais',
+    'cedula',
+    'cargo',
+    'area',
+    'jefe_directo',
+    'rol',
+    'is_verified',
+    'verification_token',
+    'email_verified_at',
+];
+
 
     protected $hidden = [
         'password',

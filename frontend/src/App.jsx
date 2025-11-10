@@ -7,20 +7,16 @@ import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import ForgotPassword from "./components/ForgotPassword.jsx";
 
-// Páginas
+// Páginas generales
 import Dashboard from "./pages/Dashboard.jsx";
 import CompletarPerfil from "./pages/CompletarPerfil.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import VerifyCode from "./pages/VerifyCode.jsx";
 import CrearEvento from "./pages/CrearEvento";
+import Perfil from "./pages/Perfil.jsx";
 
-// Dashboards por rol
+// Panel principal del sistema
 import AdminDashboard from "./pages/AdminDashboard.jsx";
-import ComunicacionesDashboard from "./pages/ComunicacionesDashboard.jsx";
-import RecursosHumanosDashboard from "./pages/RecursosHumanosDashboard.jsx";
-import SoporteTIDashboard from "./pages/SoporteTIDashboard.jsx";
-import LiderDashboard from "./pages/LiderDashboard.jsx";
-import ColaboradorDashboard from "./pages/ColaboradorDashboard.jsx";
 
 // Ruta privada (protege vistas con token)
 function PrivateRoute({ children }) {
@@ -40,10 +36,11 @@ function App() {
           <Route path="/completar-perfil" element={<CompletarPerfil />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/perfil" element={<Perfil />} />
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/crear-evento" element={<CrearEvento />} />
 
-          {/*Rutas protegidas */}
+          {/* Rutas protegidas */}
           <Route
             path="/dashboard"
             element={
@@ -53,7 +50,7 @@ function App() {
             }
           />
 
-          {/* Dashboards por rol */}
+          {/* 🔒 Panel principal (Administrador / Empleado) */}
           <Route
             path="/admin"
             element={
@@ -62,48 +59,8 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/comunicaciones"
-            element={
-              <PrivateRoute>
-                <ComunicacionesDashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/rrhh"
-            element={
-              <PrivateRoute>
-                <RecursosHumanosDashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/soporte"
-            element={
-              <PrivateRoute>
-                <SoporteTIDashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/lider"
-            element={
-              <PrivateRoute>
-                <LiderDashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/colaborador"
-            element={
-              <PrivateRoute>
-                <ColaboradorDashboard />
-              </PrivateRoute>
-            }
-          />
 
-          {/* Ruta 404 */}
+          {/* 🔹 Ruta 404 */}
           <Route
             path="*"
             element={
@@ -114,7 +71,7 @@ function App() {
           />
         </Routes>
 
-        {/* Toaster global para notificaciones */}
+        {/* 🔔 Toaster global para notificaciones */}
         <Toaster
           position="top-right"
           toastOptions={{

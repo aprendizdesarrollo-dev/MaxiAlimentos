@@ -7,69 +7,86 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Str;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class AuthController extends Controller
 {
     /**
      * Registro de usuario (solo crea cuenta)
      */
-   public function register(Request $request)
-{
-    try {
-        $validated = $request->validate([
-            'nombre'   => 'required|string|max:255',
-            'correo'   => 'required|string|email|max:255|unique:users,correo',
-            'password' => 'required|string|min:6|confirmed',
-            'cedula'   => 'required|string|max:20|unique:users,cedula',
-            'cargo'    => 'nullable|string|max:100',
-            'area'     => 'nullable|string|max:100',
-        ]);
+        public function register(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'nombre'            => 'required|string|max:255',
+                'apellido'          => 'required|string|max:255',
+                'correo'            => 'required|string|email|max:255|unique:users,correo',
+                'password'          => 'required|string|min:6|confirmed',
+                'cedula'            => 'required|string|max:20|unique:users,cedula',
+                'cargo'             => 'nullable|string|max:100',
+                'area'              => 'nullable|string|max:100',
+                'segundo_nombre'    => 'nullable|string|max:255',
+                'genero'            => 'nullable|string|max:50',
+                'fecha_nacimiento'  => 'nullable|date',
+                'estado_civil'      => 'nullable|string|max:100',
+                'telefono_personal' => 'nullable|string|max:50',
+                'correo_corporativo'=> 'nullable|string|email|max:255',
+                'correo_personal'   => 'nullable|string|email|max:255',
+                'direccion'         => 'nullable|string|max:255',
+                'ciudad'            => 'nullable|string|max:100',
+                'departamento'      => 'nullable|string|max:100',
+                'pais'              => 'nullable|string|max:100',
+                'jefe_directo'      => 'nullable|string|max:255',
+                'rol'               => 'nullable|string|max:50',
+            ]);
 
-        $user = User::create([
-            'nombre'   => $validated['nombre'],
-            'correo'   => $validated['correo'],
-            'password' => Hash::make($validated['password']),
-            'cedula'   => $validated['cedula'],
-            'cargo'    => $validated['cargo'] ?? null,
-            'area'     => $validated['area'] ?? null,
-        ]);
+    // Generar código de verificación (numérico)
+    $code = rand(100000, 999999);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuario registrado correctamente.',
-            'user'    => $user
-        ], 201);
+    // Guardar los datos temporalmente en caché (15 minutos)
+    Cache::put('verify_' . $validated['correo'], [
+        'nombre' => $validated['nombre'],
+        'segundo_nombre' => $request->segundo_nombre,
+        'apellido' => $validated['apellido'],
+        'genero' => $request->genero,
+        'fecha_nacimiento' => $request->fecha_nacimiento,
+        'estado_civil' => $request->estado_civil,
+        'telefono_personal' => $request->telefono_personal,
+        'correo' => $validated['correo'],
+        'correo_corporativo' => $request->correo_corporativo,
+        'correo_personal' => $request->correo_personal,
+        'direccion' => $request->direccion,
+        'ciudad' => $request->ciudad,
+        'departamento' => $request->departamento,
+        'pais' => $request->pais,
+        'cedula' => $validated['cedula'],
+        'cargo' => $request->cargo,
+        'area' => $request->area,
+        'jefe_directo' => $request->jefe_directo,
+        'rol' => $request->rol ?? 'Empleado',
+        'password' => Hash::make($validated['password']),
+        'code' => $code,
+    ], now()->addMinutes(15));
 
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        // Detecta si el error es por correo duplicado o cédula duplicada
-        if (isset($e->errors()['correo'])) {
+    // Enviar correo con el código
+    Mail::to($validated['correo'])->send(new VerificationCodeMail($code, $validated['nombre']));
+
+    // Respuesta JSON
+    return response()->json([
+        'success' => true,
+        'message' => 'Se envió un código de verificación al correo institucional. Tienes 15 minutos para verificarlo.'
+    ]);
+
+
+        } catch (\Exception $ex) {
             return response()->json([
                 'success' => false,
-                'message' => 'El correo ya está registrado. Intenta con otro por favor.'
-            ], 409);
+                'message' => 'Ocurrió un error en el registro: ' . $ex->getMessage()
+            ], 500);
         }
-
-        if (isset($e->errors()['cedula'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'La cédula ya está registrada. Verifica los datos.'
-            ], 409);
-        }
-
-        // Si es otro error de validación normal
-        return response()->json([
-            'success' => false,
-            'message' => 'Datos inválidos.',
-            'errors'  => $e->errors()
-        ], 422);
-    } catch (\Exception $ex) {
-        // Cualquier otro error inesperado
-        return response()->json([
-            'success' => false,
-            'message' => 'Ocurrió un error en el registro: ' . $ex->getMessage()
-        ], 500);
     }
-}
 
 
     /**

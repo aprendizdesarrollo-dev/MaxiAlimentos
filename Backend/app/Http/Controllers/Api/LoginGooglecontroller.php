@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Google\Client as GoogleClient;
+use Google_Client;
 
 class LoginGoogleController extends Controller
 {
@@ -28,7 +28,7 @@ class LoginGoogleController extends Controller
         \Log::info(' Entrando al método loginGoogle correctamente.');
         \Log::info(' Token recibido: ' . substr($token, 0, 30) . '...');
 
-        $client = new GoogleClient();
+        $client = new \Google_Client();
         $client->setClientId(env('GOOGLE_CLIENT_ID'));
         $payload = $client->verifyIdToken($token);
 

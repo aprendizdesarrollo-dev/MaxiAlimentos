@@ -19,6 +19,12 @@ import {
 } from "lucide-react";
 import DashboardCard from "../components/DashboardCard";
 import EventosCarousel from "../components/EventosCarousel";
+import ComunicadosDashboard from "./ComunicadosDashboard";
+import Perfil from "./Perfil";
+import { UserCircle } from "lucide-react";
+
+
+
 
 /**
  * ADMIN DASHBOARD - MAXIALIMENTOS
@@ -35,9 +41,10 @@ export default function AdminDashboard() {
     const [active, setActive] = useState("inicio");
     const [isOpen, setIsOpen] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [newComunicado, setNewComunicado] = useState({ titulo: "", mensaje: "" });
     const [preview, setPreview] = useState("");
     const navigate = useNavigate();
+    const [comunicados, setComunicados] = useState([]);
+
 
     /** ==============================
      * 1️⃣ FETCH USER DATA
@@ -67,21 +74,6 @@ export default function AdminDashboard() {
     };
 
     /** ==============================
-     * 3️⃣ CREATE COMUNICADO
-     * ============================== */
-    const handleCreateComunicado = async (e) => {
-        e.preventDefault();
-        try {
-            await api.post("/comunicados", newComunicado);
-            setShowModal(false);
-            setNewComunicado({ titulo: "", mensaje: "" });
-            alert("Comunicado publicado correctamente");
-        } catch (err) {
-            alert("Error al crear comunicado");
-        }
-    };
-
-    /** ==============================
      * 4️⃣ CAMBIO DE FOTO DE PERFIL
      * ============================== */
     const handleFileChange = (e) => {
@@ -93,7 +85,29 @@ export default function AdminDashboard() {
         }
     };
 
-    if (!user) return null;
+    /** ==============================
+     *  🔄 FETCH COMUNICADOS RECIENTES
+     * ============================== */
+    useEffect(() => {
+        const fetchComunicados = async () => {
+            try {
+                const res = await api.get("/comunicados");
+                // Ajuste según el formato real del backend
+                setComunicados(res.data.data || []);
+            } catch (err) {
+                console.error("Error al obtener comunicados:", err);
+                setComunicados([]);
+            }
+        };
+        fetchComunicados();
+    }, []);
+
+
+
+    if (user?.rol !== "Administrador") {
+        return null;
+    }
+
 
     /** ==============================
      * 5️⃣ MENÚ LATERAL
@@ -106,6 +120,9 @@ export default function AdminDashboard() {
         { id: "mesa", label: "Mesa de ayuda", icon: <ClipboardList size={20} /> },
         { id: "reportes", label: "Reportes", icon: <BarChart3 size={20} /> },
         { id: "config", label: "Configuración", icon: <Settings size={20} /> },
+        { id: "perfil", label: "Perfil", icon: <UserCircle size={20} /> },
+
+
     ];
 
     /** ==============================
@@ -139,7 +156,7 @@ export default function AdminDashboard() {
                                         {user.cargo || "Cargo no definido"}
                                     </p>
                                     <button
-                                        onClick={() => navigate("/perfil")}
+                                        onClick={() => setActive("perfil")}
                                         className="text-[#397C3C] mt-1 text-sm font-semibold hover:underline w-fit transition"
                                     >
                                         Ver mi perfil →
@@ -236,30 +253,64 @@ export default function AdminDashboard() {
                                     <EventosCarousel />
                                 </DashboardCard>
 
-                                <DashboardCard title="Comunicados Recientes" className="flex-1">
-                                    <div className="space-y-4">
-                                        <div className="border-b pb-3">
-                                            <p className="text-[#397C3C] font-semibold">
-                                                Nueva política de bienestar
-                                            </p>
-                                            <p className="text-gray-600 text-sm">
-                                                Actualización de beneficios laborales y capacitaciones.
-                                            </p>
+                                {/* === COMUNICADOS RECIENTES === */}
+                                <DashboardCard
+                                    title={
+                                        <div className="flex items-center gap-2 text-[#397C3C] font-semibold text-lg">
+                                            <FileText size={22} className="text-[#397C3C]" />
+                                            <span>Comunicados Recientes</span>
                                         </div>
-                                        <div className="border-b pb-3">
-                                            <p className="text-[#397C3C] font-semibold">
-                                                Reunión de Seguridad Industrial
+                                    }
+                                    className="flex-1"
+                                >
+                                    {/* Contenedor con scroll interno */}
+                                    <div className="max-h-[260px] overflow-y-auto pr-2 space-y-4">
+                                        {comunicados.length > 0 ? (
+                                            comunicados.map((com, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="border-b border-gray-200 pb-3 last:border-none"
+                                                >
+                                                    <p className="text-[#397C3C] font-semibold mb-1">
+                                                        {com.titulo}
+                                                    </p>
+
+                                                    {/* Texto truncado con límite */}
+                                                    <p className="text-gray-600 text-sm line-clamp-3 overflow-hidden">
+                                                        {com.mensaje}
+                                                    </p>
+
+                                                    <p className="text-gray-400 text-xs mt-1">
+                                                        {new Date(com.created_at).toLocaleDateString("es-CO", {
+                                                            weekday: "long",
+                                                            day: "numeric",
+                                                            month: "long",
+                                                            year: "numeric",
+                                                        })}
+                                                    </p>
+
+                                                    {/* Botón Ver más (lleva al módulo completo) */}
+                                                    <button
+                                                        onClick={() => setActive("comunicados")}
+                                                        className="text-[#397C3C] text-sm font-medium mt-1 hover:underline"
+                                                    >
+                                                        Ver más →
+                                                    </button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 text-sm text-center py-3">
+                                                No hay comunicados recientes.
                                             </p>
-                                            <p className="text-gray-600 text-sm">
-                                                Miércoles 6 de noviembre, planta San Martín.
-                                            </p>
-                                        </div>
+                                        )}
                                     </div>
+
+                                    {/* Botón principal inferior */}
                                     <button
-                                        onClick={() => setShowModal(true)}
-                                        className="bg-[#397C3C] mt-4 flex items-center gap-2 text-white px-5 py-2 rounded-lg hover:bg-[#2f612f] transition"
+                                        onClick={() => setActive("comunicados")}
+                                        className="bg-[#397C3C] mt-4 flex items-center justify-center gap-2 text-white px-5 py-2 rounded-lg hover:bg-[#2f612f] transition w-full"
                                     >
-                                        <PlusCircle size={18} /> Nuevo Comunicado
+                                        <FileText size={18} /> Ver todos los comunicados
                                     </button>
                                 </DashboardCard>
                             </div>
@@ -299,22 +350,11 @@ export default function AdminDashboard() {
                 );
             /** --- SECCIÓN COMUNICADOS --- */
             case "comunicados":
-                return (
-                    <div className="bg-white rounded-2xl p-10 shadow-lg">
-                        <h2 className="text-3xl font-bold text-[#397C3C] mb-4">
-                            Comunicados internos
-                        </h2>
-                        <p className="text-gray-700 mb-6 text-lg">
-                            Aquí podrás ver, editar o eliminar comunicados publicados.
-                        </p>
-                        <button
-                            onClick={() => setShowModal(true)}
-                            className="bg-[#397C3C] flex items-center gap-2 text-white px-6 py-3 rounded-lg hover:bg-[#2f612f] transition"
-                        >
-                            <PlusCircle size={20} /> Agregar nuevo comunicado
-                        </button>
-                    </div>
-                );
+                return <ComunicadosDashboard />;
+
+            /** --- SECCIÓN COMUNICADOS --- */
+            case "perfil":
+                return <Perfil />;
 
             /** --- SECCIONES EN DESARROLLO --- */
             default:
@@ -325,17 +365,6 @@ export default function AdminDashboard() {
                 );
         }
     };
-
-
-
-
-
-
-
-
-
-
-
     /** ==============================
      * 7️⃣ ESTRUCTURA GENERAL DEL FRONT
      * ============================== */
@@ -399,59 +428,6 @@ export default function AdminDashboard() {
             >
                 <div className="space-y-10">{renderSection()}</div>
             </main>
-
-            {/* ===== MODAL PARA NUEVO COMUNICADO ===== */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-                    <div className="bg-white p-8 rounded-2xl w-[500px] shadow-2xl relative">
-                        <button
-                            onClick={() => setShowModal(false)}
-                            className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
-                        >
-                            <X size={20} />
-                        </button>
-                        <h2 className="text-3xl font-bold text-[#397C3C] mb-6">
-                            Crear Comunicado
-                        </h2>
-                        <form onSubmit={handleCreateComunicado} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                    Título
-                                </label>
-                                <input
-                                    type="text"
-                                    value={newComunicado.titulo}
-                                    onChange={(e) =>
-                                        setNewComunicado({ ...newComunicado, titulo: e.target.value })
-                                    }
-                                    className="w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-[#397C3C]"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                    Mensaje
-                                </label>
-                                <textarea
-                                    rows="4"
-                                    value={newComunicado.mensaje}
-                                    onChange={(e) =>
-                                        setNewComunicado({ ...newComunicado, mensaje: e.target.value })
-                                    }
-                                    className="w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-[#397C3C]"
-                                    required
-                                ></textarea>
-                            </div>
-                            <button
-                                type="submit"
-                                className="w-full bg-[#397C3C] text-white py-2 rounded-lg hover:bg-[#2f612f] transition"
-                            >
-                                Publicar comunicado
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

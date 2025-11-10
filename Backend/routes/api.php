@@ -10,10 +10,13 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\ComunicadosController;
 use App\Http\Controllers\API\EventoController;
+use App\Http\Controllers\API\ComunicadoController;
+use App\Http\Controllers\Api\PerfilController;
+
 
 // RUTAS DE LOGUEO
 
-Route::post('/register', [AuthController::class, 'register']);
+//Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('jwt.auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -45,9 +48,6 @@ Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
         Route::delete('/comunicados/{id}', [ComunicadosController::class, 'destroy']);
     });
 
-    // Acceso general autenticado
-    Route::get('/comunicados', [ComunicadosController::class, 'index']);
-
     // RUTA EVENTOS DASHBOARD ADMIN
     
     Route::get('/eventos', [EventoController::class, 'index']);
@@ -55,4 +55,16 @@ Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
     Route::get('/eventos/{id}', [EventoController::class, 'show']);
     Route::put('/eventos/{id}', [EventoController::class, 'update']);
     Route::delete('/eventos/{id}', [EventoController::class, 'destroy']);
+
+
+    // RUTA DE COMUNICADOS
+
+
+   Route::middleware('jwt.auth')->group(function () {
+    Route::get('/comunicados', [ComunicadosController::class, 'index']);
+    Route::post('/comunicados', [ComunicadosController::class, 'store']);
+    Route::get('/comunicados/{id}', [ComunicadosController::class, 'show']);
+    Route::put('/comunicados/{id}', [ComunicadosController::class, 'update']);
+    Route::delete('/comunicados/{id}', [ComunicadosController::class, 'destroy']);
+    });
 
