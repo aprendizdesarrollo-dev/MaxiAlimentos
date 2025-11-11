@@ -25,7 +25,7 @@ class EventoController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'fecha' => 'required|date',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
         ]);
 
         $evento = new Evento();
@@ -78,7 +78,7 @@ class EventoController extends Controller
                 'titulo' => 'required|string|max:255',
                 'descripcion' => 'required|string',
                 'fecha' => 'required|date',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
             ]);
 
             $evento->titulo = $validatedData['titulo'];

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api from "../../services/api";
 import { GoogleLogin } from "@react-oauth/google";
 import toast from "react-hot-toast";
 
@@ -106,7 +106,7 @@ function Login() {
         <div className="w-full lg:w-1/2 p-10 flex flex-col justify-center">
           <div className="flex justify-center mb-6">
             <img
-              src="/assets/logo.png"
+              src="../assets/logo.png"
               alt="Logo MaxiAlimentos"
               className="w-32 h-auto"
             />

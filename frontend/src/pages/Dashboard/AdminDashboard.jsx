@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api from "../../services/api";
 import { motion } from "framer-motion";
 import {
     Home,
@@ -17,10 +17,10 @@ import {
     Link2,
     Gift,
 } from "lucide-react";
-import DashboardCard from "../components/DashboardCard";
-import EventosCarousel from "../components/EventosCarousel";
-import ComunicadosDashboard from "./ComunicadosDashboard";
-import Perfil from "./Perfil";
+import DashboardCard from "../../components/Dashboard/DashboardCard";
+import EventosCarousel from "../../components/Evento/EventosCarousel";
+import ComunicadosDashboard from "../../components/Comunicados/ComunicadosDashboard";
+import Perfil from "../Perfil/Perfil";
 import { UserCircle } from "lucide-react";
 
 

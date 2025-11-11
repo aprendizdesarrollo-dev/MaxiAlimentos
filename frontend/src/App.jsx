@@ -2,21 +2,25 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 
-// Componentes principales
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
-import ForgotPassword from "./components/ForgotPassword.jsx";
+// COMPONENTES DE AUTENTICACIÓN
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import ForgotPassword from "./components/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
+import VerifyCode from "./pages/Auth/VerifyCode";
 
-// Páginas generales
-import Dashboard from "./pages/Dashboard.jsx";
-import CompletarPerfil from "./pages/CompletarPerfil.jsx";
-import ResetPassword from "./pages/ResetPassword.jsx";
-import VerifyCode from "./pages/VerifyCode.jsx";
-import CrearEvento from "./pages/CrearEvento";
-import Perfil from "./pages/Perfil.jsx";
+// DASHBOARD
+import AdminDashboard from "./pages/Dashboard/AdminDashboard";
+import ColaboradorDashboard from "./pages/Dashboard/ColaboradorDashboard";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
-// Panel principal del sistema
-import AdminDashboard from "./pages/AdminDashboard.jsx";
+// PERFIL
+import Perfil from "./pages/Perfil/Perfil";
+import CompletarPerfil from "./pages/Perfil/CompletarPerfil";
+
+// EVENTOS
+import CrearEvento from "./pages/Evento/CrearEvento";
+
 
 // Ruta privada (protege vistas con token)
 function PrivateRoute({ children }) {
