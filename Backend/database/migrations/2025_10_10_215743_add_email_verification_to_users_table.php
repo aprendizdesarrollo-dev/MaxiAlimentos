@@ -30,19 +30,23 @@ return new class extends Migration
     /**
      * Reversa los cambios por si hay que volver atrás.
      */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            // Elimina el índice si existe
-            if (Schema::hasColumn('users', 'verification_token')) {
-                $table->dropIndex(['verification_token']);
-                $table->dropColumn('verification_token');
-            }
+public function down(): void
+{
+    Schema::table('users', function (Blueprint $table) {
+        // Antes eliminaba el índice directamente (causaba error)
+        // $table->dropIndex('users_verification_token_index');
 
-            // Elimina la columna is_verified si existe
-            if (Schema::hasColumn('users', 'is_verified')) {
-                $table->dropColumn('is_verified');
-            }
-        });
-    }
+        // Nuevo: eliminar columnas si existen
+        if (Schema::hasColumn('users', 'verification_token')) {
+            $table->dropColumn('verification_token');
+        }
+        if (Schema::hasColumn('users', 'is_verified')) {
+            $table->dropColumn('is_verified');
+        }
+        if (Schema::hasColumn('users', 'email_verified_at')) {
+            $table->dropColumn('email_verified_at');
+        }
+    });
+}
+
 };

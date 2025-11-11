@@ -18,14 +18,14 @@ class ForgotPasswordController extends Controller
      */
     public function sendResetLink(Request $request)
     {
-        // ✅ 1. Validar el correo institucional
+        // 1. Validar el correo institucional
         $request->validate([
             'correo' => 'required|email|exists:users,correo',
         ], [
             'correo.exists' => 'No existe un usuario con ese correo institucional.',
         ]);
 
-        // ✅ 2. Buscar al usuario
+        // 2. Buscar al usuario
         $user = User::where('correo', $request->correo)->first();
 
         if (!$user) {
@@ -35,13 +35,13 @@ class ForgotPasswordController extends Controller
             ], 404);
         }
 
-        // ✅ 3. Generar token aleatorio
+        // 3. Generar token aleatorio
         $token = Str::random(64);
 
-        // ✅ 4. Guardar o actualizar el token en la tabla password_reset_tokens
+        // 4. Guardar o actualizar el token en la tabla password_reset_tokens
         try {
             DB::table('password_reset_tokens')->updateOrInsert(
-                ['email' => $user->correo], // 👈 debe ser 'email'
+                ['correo' => $user->correo], 
                 [
                     'token' => $token,
                     'created_at' => Carbon::now(),
@@ -56,10 +56,10 @@ class ForgotPasswordController extends Controller
             ], 500);
         }
 
-        // ✅ 5. Crear el enlace de recuperación que abre el frontend
+        // 5. Crear el enlace de recuperación que abre el frontend
         $resetLink = "http://localhost:5173/reset-password/{$token}?email={$user->correo}";
 
-        // ✅ 6. Enviar el correo
+        // 6. Enviar el correo
         try {
             Mail::raw(
                 "Hola {$user->nombre},\n\n" .
