@@ -107,7 +107,15 @@ class VerificationController extends Controller
 
         // Crear usuario verificado
         $user = User::create([
-            
+
+        'nombre' => $data['nombre'],
+        'segundo_nombre' => $data['segundo_nombre'] ?? null,
+        'apellido' => $data['apellido'],
+        'cedula' => $data['cedula'],
+        'genero' => $data['genero'] ?? null,
+        'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
+        'estado_civil' => $data['estado_civil'] ?? null,
+        'telefono_personal' => $data['telefono_personal'] ?? null,
         'correo' => $data['correo'],
         'correo_corporativo' => $data['correo_corporativo'] ?? null,
         'correo_personal' => $data['correo_personal'] ?? null,
@@ -115,7 +123,6 @@ class VerificationController extends Controller
         'ciudad' => $data['ciudad'] ?? null,
         'departamento' => $data['departamento'] ?? null,
         'pais' => $data['pais'] ?? null,
-        'cedula' => $data['cedula'],
         'cargo' => $data['cargo'],
         'area' => $data['area'],
         'jefe_directo' => $data['jefe_directo'] ?? null,

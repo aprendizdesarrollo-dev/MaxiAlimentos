@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use PHPMailer\PHPMailer\Exception;
+use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+
 
 class AuthController extends Controller
 {
@@ -153,5 +155,30 @@ public function me(Request $request)
     }
 }
 
+    public function updateFotoPerfil(Request $request)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
 
+        $request->validate([
+            'foto_perfil' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // Elimina la anterior si existe
+        if ($user->foto_perfil && Storage::disk('public')->exists($user->foto_perfil)) {
+            Storage::disk('public')->delete($user->foto_perfil);
+        }
+
+        // Guarda la nueva imagen
+        $path = $request->file('foto_perfil')->store('users', 'public');
+
+        // Actualiza el usuario
+        $user->foto_perfil = $path;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Foto de perfil actualizada correctamente',
+            'foto_url' => asset('storage/' . $path),
+        ]);
+    }
 }
