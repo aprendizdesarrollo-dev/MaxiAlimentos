@@ -9,9 +9,9 @@ use App\Http\Controllers\Api\LoginGoogleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\ComunicadosController;
-use App\Http\Controllers\API\EventoController;
-use App\Http\Controllers\API\ComunicadoController;
+use App\Http\Controllers\Api\EventoController;
 use App\Http\Controllers\Api\PerfilController;
+use App\Http\Controllers\Api\DirectorioController;
 
 
     // RUTAS DE LOGUEO
@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\PerfilController;
         Route::get('/me', [AuthController::class, 'me']);});
     Route::post('/google-login', [LoginGoogleController::class, 'login']);
     Route::middleware('auth:api')->put('/user/update', [UserController::class, 'update']);
+    Route::post('/perfil/foto', [AuthController::class, 'updateFotoPerfil']);
+
 
     //RUTAS DE RESTABLECER CONTRASEÑA    
 
@@ -67,4 +69,18 @@ use App\Http\Controllers\Api\PerfilController;
     Route::put('/comunicados/{id}', [ComunicadosController::class, 'update']);
     Route::delete('/comunicados/{id}', [ComunicadosController::class, 'destroy']);
     });
+
+    // RUTAS DIRECTORIO
+
+    Route::get('/directorio', [DirectorioController::class, 'index']);
+
+    // RUTAS PERFIL
+    
+    Route::group(['middleware' => 'auth:api'], function () {
+        Route::get('/perfil', [PerfilController::class, 'show']);
+        Route::put('/perfil', [PerfilController::class, 'update']);
+        Route::post('/perfil/foto', [PerfilController::class, 'updateFoto']);});
+    Route::post('/perfil/foto', [PerfilController::class, 'actualizarFoto']);
+
+
 

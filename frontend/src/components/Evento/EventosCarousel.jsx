@@ -179,7 +179,9 @@ export default function EventosCarousel() {
                 <h3 className="text-2xl font-semibold text-[#397C3C] mb-2">
                   {evento.titulo}
                 </h3>
-                <p className="text-gray-700 text-base mb-3">{evento.descripcion}</p>
+                <p className="text-gray-700 text-sm leading-relaxed line-clamp-4 overflow-hidden">
+                  {evento.descripcion}
+                </p>
                 <p className="text-sm text-gray-500 mb-4 italic">
                   {new Date(evento.fecha).toLocaleDateString("es-CO", {
                     year: "numeric",
@@ -204,37 +206,47 @@ export default function EventosCarousel() {
 
       {/* Modal de evento */}
       {eventoSeleccionado && (
-        <div className="fixed inset-0 bg-[#000000]/40 backdrop-blur-[2px] flex justify-center items-center z-50">
-          <div className="bg-[#f5f5f5] rounded-3xl shadow-2xl w-[95%] max-w-3xl overflow-hidden p-6 animate-fadeIn flex flex-col items-center relative">
+        <div className="fixed inset-0 bg-[#00000080] backdrop-blur-md flex justify-center items-center z-50 transition-all duration-300">
+          <div className="bg-[#f5f5f5] rounded-3xl shadow-2xl w-[95%] max-w-5xl p-8 relative overflow-hidden animate-fadeIn">
+
+            {/* Botón de cierre */}
             <button
               onClick={cerrarModal}
-              className="absolute top-3 right-3 bg-[#397C3C] text-white w-8 h-8 rounded-full flex justify-center items-center hover:bg-[#2f612f] transition"
+              className="absolute top-4 right-4 bg-[#397C3C] text-white w-9 h-9 rounded-full flex justify-center items-center hover:bg-[#2f612f] transition"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
 
-            <h2 className="text-3xl font-bold text-[#397C3C] mb-4 flex items-center gap-2">
-              <CalendarDays size={28} strokeWidth={2.5} />
-              Evento
+            {/* Encabezado */}
+            <h2 className="text-3xl font-bold text-[#397C3C] mb-6 flex items-center gap-2 justify-center">
+              <CalendarDays size={30} strokeWidth={2.5} />
+              Detalle del Evento
             </h2>
 
-            <div className="w-full h-[400px] bg-gray-200 overflow-hidden rounded-2xl shadow-md mb-5">
-              <img
-                src={eventoSeleccionado.imagen}
-                alt={eventoSeleccionado.titulo}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            {/* Contenedor principal */}
+            <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
 
-            <div className="w-full bg-[#e9e9e9] border border-gray-300 rounded-2xl p-6 shadow-inner mb-6">
-              <div className="mb-4">
-                <h3 className="text-2xl font-semibold text-[#397C3C] mb-2">
+              {/* Imagen del evento */}
+              <div className="flex-1 w-full lg:w-1/2 flex items-center justify-center">
+                <div className="w-full h-[420px] rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-inner">
+                  <img
+                    src={eventoSeleccionado.imagen}
+                    alt={eventoSeleccionado.titulo}
+                    className="w-full h-full object-contain rounded-2xl"
+                  />
+                </div>
+              </div>
+
+
+              {/* Información del evento */}
+              <div className="flex-1 w-full lg:w-1/2 bg-[#e9e9e9] border border-gray-300 rounded-2xl p-6 shadow-inner">
+                <h3 className="text-2xl font-semibold text-[#397C3C] mb-3 leading-snug">
                   {eventoSeleccionado.titulo}
                 </h3>
-                <p className="text-gray-700 text-base leading-relaxed mb-3">
+                <p className="text-gray-700 text-base leading-relaxed mb-5">
                   {eventoSeleccionado.descripcion}
                 </p>
-                <p className="text-sm text-gray-500 italic">
+                <p className="text-sm text-gray-500 italic text-right">
                   {new Date(eventoSeleccionado.fecha).toLocaleDateString("es-CO", {
                     year: "numeric",
                     month: "long",
@@ -244,19 +256,20 @@ export default function EventosCarousel() {
               </div>
             </div>
 
-            <div className="flex justify-center gap-6">
+            {/* Botones inferiores */}
+            <div className="flex justify-center gap-6 mt-8">
               <button
                 onClick={() => {
                   setEventoEditando(eventoSeleccionado);
                   setModoEdicion(true);
                 }}
-                className="bg-[#397C3C] text-white px-6 py-2 rounded-lg hover:bg-[#2f612f] transition shadow"
+                className="bg-[#397C3C] text-white px-8 py-3 rounded-lg hover:bg-[#2f612f] transition font-semibold shadow"
               >
                 Actualizar
               </button>
               <button
                 onClick={() => setConfirmarEliminar(eventoSeleccionado.id)}
-                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition shadow"
+                className="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition font-semibold shadow"
               >
                 Eliminar
               </button>

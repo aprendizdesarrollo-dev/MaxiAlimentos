@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
+import "./index.css";
 
 // COMPONENTES DE AUTENTICACIÓN
 import Login from "./components/Auth/Login";
@@ -13,16 +14,17 @@ import VerifyCode from "./pages/Auth/VerifyCode";
 import AdminDashboard from "./pages/Dashboard/AdminDashboard";
 import ColaboradorDashboard from "./pages/Dashboard/ColaboradorDashboard";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import DirectorioDashboard from "./pages/Directorio/DirectorioDashboard";
 
 // PERFIL
-import Perfil from "./pages/Perfil/Perfil";
+import Perfil from "./pages/Perfil/PerfilDashboard";
 import CompletarPerfil from "./pages/Perfil/CompletarPerfil";
 
 // EVENTOS
 import CrearEvento from "./pages/Evento/CrearEvento";
 
 
-// Ruta privada (protege vistas con token)
+// 🔒 Ruta privada
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" replace />;
@@ -43,8 +45,9 @@ function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/crear-evento" element={<CrearEvento />} />
+          <Route path="/directorio" element={<DirectorioDashboard />} />
 
-          {/* Rutas protegidas */}
+          {/* 🔒 Rutas protegidas */}
           <Route
             path="/dashboard"
             element={
@@ -54,7 +57,6 @@ function App() {
             }
           />
 
-          {/* 🔒 Panel principal (Administrador / Empleado) */}
           <Route
             path="/admin"
             element={
@@ -75,7 +77,7 @@ function App() {
           />
         </Routes>
 
-        {/* 🔔 Toaster global para notificaciones */}
+        {/* 🔔 Toaster global */}
         <Toaster
           position="top-right"
           toastOptions={{
