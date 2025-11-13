@@ -20,11 +20,9 @@ import {
 import DashboardCard from "../../components/Dashboard/DashboardCard";
 import EventosCarousel from "../../components/Evento/EventosCarousel";
 import ComunicadosDashboard from "../../components/Comunicados/ComunicadosDashboard";
-import Perfil from "../Perfil/Perfil";
+import Perfil from "../Perfil/PerfilDashboard";
 import { UserCircle } from "lucide-react";
-
-
-
+import DirectorioDashboard from "../Directorio/DirectorioDashboard";
 
 /**
  * ADMIN DASHBOARD - MAXIALIMENTOS
@@ -357,12 +355,10 @@ export default function AdminDashboard() {
                 return <Perfil />;
 
             /** --- SECCIONES EN DESARROLLO --- */
-            default:
-                return (
-                    <div className="p-6 text-gray-700 text-lg">
-                        Módulo en desarrollo...
-                    </div>
-                );
+            case "directorio":
+                return <DirectorioDashboard />
+                
+                
         }
     };
     /** ==============================
