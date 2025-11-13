@@ -14,29 +14,29 @@ use App\Http\Controllers\API\ComunicadoController;
 use App\Http\Controllers\Api\PerfilController;
 
 
-// RUTAS DE LOGUEO
+    // RUTAS DE LOGUEO
 
-//Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('jwt.auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);});
-Route::post('/google-login', [LoginGoogleController::class, 'login']);
-Route::middleware('auth:api')->put('/user/update', [UserController::class, 'update']);
+    //Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::middleware('jwt.auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);});
+    Route::post('/google-login', [LoginGoogleController::class, 'login']);
+    Route::middleware('auth:api')->put('/user/update', [UserController::class, 'update']);
 
-//RUTAS DE RESTABLECER CONTRASEÑA    
+    //RUTAS DE RESTABLECER CONTRASEÑA    
 
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
-Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+    Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
 
-//RUTA DE VERIFICACION DE CORREO
+    //RUTA DE VERIFICACION DE CORREO
 
-Route::post('/register-temp', [VerificationController::class, 'sendCode']);
-Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
+    Route::post('/register-temp', [VerificationController::class, 'sendCode']);
+    Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
 
-//RUTA DE SEEDERS
+    //RUTA DE SEEDERS
 
- // Solo Administrador
+    // Solo Administrador
     Route::middleware(['role:Administrador'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index']);
     });

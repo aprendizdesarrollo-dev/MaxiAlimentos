@@ -79,7 +79,7 @@ export default function ResetPassword() {
     <div className="relative z-10 bg-white shadow-2xl rounded-3xl p-10 w-full max-w-md text-center transition-all duration-300 hover:shadow-[#397C3C]/30">
       {/* Logo */}
       <img
-        src="/assets/logo.png"
+        src="../../assets/logo.png"
         alt="Logo MaxiAlimentos"
         className="mx-auto mb-6 w-40"
       />

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api from "../../services/api";
 import { toast } from "react-toastify";
 import { Phone, Mail, MapPin, Briefcase, GraduationCap } from "lucide-react";
 
-import Personal from "../components/Perfil/Personal";
-import Trabajo from "../components/Perfil/Trabajo";
-import Capacitaciones from "../components/Perfil/Capacitaciones";
-import Certificaciones from "../components/Perfil/Certificaciones";
-import Vacaciones from "../components/Perfil/Vacaciones";
-import Emergencias from "../components/Perfil/Emergencias";
+import Personal from "../../components/Perfil/Personal";
+import Trabajo from "../../components/Perfil/Trabajo";
+import Capacitaciones from "../../components/Perfil/Capacitaciones";
+import Certificaciones from "../../components/Perfil/Certificaciones";
+import Vacaciones from "../../components/Perfil/Vacaciones";
+import Emergencias from "../../components/Perfil/Emergencias";
 
 export default function Perfil() {
     const [user, setUser] = useState(null);

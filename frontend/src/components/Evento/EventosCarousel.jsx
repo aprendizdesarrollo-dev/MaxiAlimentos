@@ -3,8 +3,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import api from "../services/api";
+import api from "../../services/api";
 import { PlusCircle, X, CalendarDays } from "lucide-react";
+import imageCompression from "browser-image-compression";
 
 export default function EventosCarousel() {
   const [eventos, setEventos] = useState([]);
@@ -43,12 +44,40 @@ export default function EventosCarousel() {
       formData.append("descripcion", eventoEditando.descripcion || "");
       formData.append("fecha", eventoEditando.fecha || "");
 
+      // Si el usuario subió una nueva imagen
       if (eventoEditando.imagenFile instanceof File) {
-        formData.append("imagen", eventoEditando.imagenFile);
+        try {
+          // --- Comprimir antes de subir ---
+          const options = {
+            maxSizeMB: 1, // máximo 1 MB
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          };
+
+          const compressedFile = await imageCompression(eventoEditando.imagenFile, options);
+          console.log(
+            "Original:",
+            (eventoEditando.imagenFile.size / 1024).toFixed(2),
+            "KB → Comprimida:",
+            (compressedFile.size / 1024).toFixed(2),
+            "KB"
+          );
+
+          formData.append("imagen", compressedFile);
+        } catch (err) {
+          console.error("Error al comprimir la imagen:", err);
+        }
       }
 
+      // Obtener token si usas autenticación
+      const token = localStorage.getItem("token");
+
       const res = await api.post(`/eventos/${id}`, formData, {
-        headers: { Accept: "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (res.data.success) {
@@ -58,9 +87,20 @@ export default function EventosCarousel() {
         setEventoSeleccionado(null);
       } else {
         console.error("Error al actualizar:", res.data.message);
+        alert(res.data.message || "Error al actualizar evento");
       }
     } catch (error) {
       console.error("Error al actualizar evento:", error);
+
+      // Si Laravel devolvió errores de validación
+      if (error.response?.data?.errors) {
+        const errores = Object.values(error.response.data.errors).flat();
+        alert(errores.join(", "));
+      } else if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert("Error desconocido al actualizar el evento");
+      }
     } finally {
       setCargando(false);
     }
@@ -316,9 +356,8 @@ export default function EventosCarousel() {
                 <button
                   type="submit"
                   disabled={cargando}
-                  className={`flex justify-center items-center gap-2 bg-[#397C3C] text-white px-6 py-2 rounded-lg hover:bg-[#2f612f] transition ${
-                    cargando ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
+                  className={`flex justify-center items-center gap-2 bg-[#397C3C] text-white px-6 py-2 rounded-lg hover:bg-[#2f612f] transition ${cargando ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
                 >
                   {cargando ? (
                     <>

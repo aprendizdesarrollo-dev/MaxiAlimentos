@@ -1,6 +1,6 @@
 // src/pages/ColaboradorDashboard.jsx
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api from "../../services/api";
 
 export default function ColaboradorDashboard({ user }) {
   const navigate = useNavigate();
