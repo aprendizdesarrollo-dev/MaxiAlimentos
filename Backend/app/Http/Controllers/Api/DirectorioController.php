@@ -14,6 +14,8 @@ class DirectorioController extends Controller
     public function index()
     {
         try {
+
+            // Traemos todos los usuarios
             $usuarios = User::orderBy('nombre', 'asc')->get([
                 'id',
                 'nombre',
@@ -24,13 +26,22 @@ class DirectorioController extends Controller
                 'telefono_personal',
                 'correo_corporativo',
                 'correo_personal',
-                'rol'
+                'rol',
+                'foto_perfil' // <-- ESTA ES LA QUE FALTABA
             ]);
+
+            // Convertimos foto_perfil en URL pública
+            foreach ($usuarios as $u) {
+                $u->foto_perfil = $u->foto_perfil
+                    ? asset('storage/' . $u->foto_perfil)
+                    : null;
+            }
 
             return response()->json([
                 'success' => true,
                 'data' => $usuarios
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

@@ -92,16 +92,16 @@ const PerfilHeader = ({ user, isEditing, onToggleEdit, setUser, showEditButton }
       </div>
 
       {/* Botón Editar/Cancelar */}
-      <button
-        onClick={onToggleEdit}
-        className={`px-5 py-2 rounded-full font-medium transition ${isEditing
-          ? "bg-gray-300 text-gray-800"
-          : "bg-[#397C3C] text-white hover:bg-[#2f6c31]"
-          }`}
-        style={{ display: showEditButton ? "block" : "none" }} // ✅ solo si tab = personal
-      >
-        {isEditing ? "Cancelar" : "Editar perfil"}
-      </button>
+      {!isEditing && (
+        <button
+          onClick={onToggleEdit}
+          className="px-5 py-2 rounded-full font-medium transition bg-[#397C3C] text-white hover:bg-[#2f6c31]"
+          style={{ display: showEditButton ? "block" : "none" }}
+        >
+          Editar perfil
+        </button>
+      )}
+
 
     </div>
   );

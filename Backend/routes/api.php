@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ComunicadosController;
 use App\Http\Controllers\Api\EventoController;
 use App\Http\Controllers\Api\PerfilController;
 use App\Http\Controllers\Api\DirectorioController;
+use App\Http\Controllers\API\EducacionController;
 
 
     // RUTAS DE LOGUEO
@@ -76,11 +77,15 @@ use App\Http\Controllers\Api\DirectorioController;
 
     // RUTAS PERFIL
     
-    Route::group(['middleware' => 'auth:api'], function () {
-        Route::get('/perfil', [PerfilController::class, 'show']);
-        Route::put('/perfil', [PerfilController::class, 'update']);
-        Route::post('/perfil/foto', [PerfilController::class, 'updateFoto']);});
+   Route::middleware('jwt.auth')->group(function () {
+    Route::get('/perfil', [PerfilController::class, 'show']);
+    Route::put('/perfil', [PerfilController::class, 'update']);
     Route::post('/perfil/foto', [PerfilController::class, 'actualizarFoto']);
 
-
+    // EDUCACIÓN
+    Route::get('/educaciones', [EducacionController::class, 'index']);
+    Route::post('/educaciones', [EducacionController::class, 'store']);
+    Route::put('/educaciones/{id}', [EducacionController::class, 'update']);
+    Route::delete('/educaciones/{id}', [EducacionController::class, 'destroy']);
+});
 
