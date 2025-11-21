@@ -18,7 +18,7 @@ class EventoController extends Controller
         return response()->json(['data' => $eventos], 200);
     }
 
-    // 📌 Crear nuevo evento
+    //  Crear nuevo evento
     public function store(Request $request)
     {
         $request->validate([
@@ -33,7 +33,7 @@ class EventoController extends Controller
         $evento->descripcion = $request->descripcion;
         $evento->fecha = $request->fecha;
 
-        // ✅ Guardar imagen si se envía
+        //  Guardar imagen si se envía
         if ($request->hasFile('imagen')) {
             $path = $request->file('imagen')->store('eventos', 'public');
             $evento->imagen = asset('storage/' . $path);
@@ -48,7 +48,7 @@ class EventoController extends Controller
         ], 201);
     }
 
-    // 📌 Mostrar un evento específico
+    //  Mostrar un evento específico
     public function show($id)
     {
         $evento = Evento::find($id);
@@ -66,7 +66,7 @@ class EventoController extends Controller
         ]);
     }
 
-    // 📌 Actualizar evento (incluye imagen)
+    //  Actualizar evento (incluye imagen)
     public function update(Request $request, $id)
     {
         try {

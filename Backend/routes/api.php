@@ -12,72 +12,75 @@ use App\Http\Controllers\Api\ComunicadosController;
 use App\Http\Controllers\Api\EventoController;
 use App\Http\Controllers\Api\PerfilController;
 use App\Http\Controllers\Api\DirectorioController;
-use App\Http\Controllers\API\EducacionController;
+use App\Http\Controllers\Api\EducacionController;
+use App\Http\Controllers\Api\CumpleaniosController;
+use App\Http\Controllers\Api\EstadisticasController;
+use App\Http\Controllers\Api\BeneficiosController;
+
+// RUTAS DE LOGUEO
+
+//Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('jwt.auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+});
+Route::post('/google-login', [LoginGoogleController::class, 'login']);
+Route::middleware('auth:api')->put('/user/update', [UserController::class, 'update']);
+Route::post('/perfil/foto', [AuthController::class, 'updateFotoPerfil']);
 
 
-    // RUTAS DE LOGUEO
+//RUTAS DE RESTABLECER CONTRASEÑA    
 
-    //Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::middleware('jwt.auth')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/me', [AuthController::class, 'me']);});
-    Route::post('/google-login', [LoginGoogleController::class, 'login']);
-    Route::middleware('auth:api')->put('/user/update', [UserController::class, 'update']);
-    Route::post('/perfil/foto', [AuthController::class, 'updateFotoPerfil']);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
 
+//RUTA DE VERIFICACION DE CORREO
 
-    //RUTAS DE RESTABLECER CONTRASEÑA    
+Route::post('/register-temp', [VerificationController::class, 'sendCode']);
+Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
 
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
-    Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
+//RUTA DE SEEDERS
 
-    //RUTA DE VERIFICACION DE CORREO
+// Solo Administrador
+Route::middleware(['role:Administrador'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index']);
+});
 
-    Route::post('/register-temp', [VerificationController::class, 'sendCode']);
-    Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
+// Administrador o Comunicaciones
+Route::middleware(['role:Administrador,Comunicaciones'])->group(function () {
+    Route::post('/comunicados', [ComunicadosController::class, 'store']);
+    Route::put('/comunicados/{id}', [ComunicadosController::class, 'update']);
+    Route::delete('/comunicados/{id}', [ComunicadosController::class, 'destroy']);
+});
 
-    //RUTA DE SEEDERS
+// RUTA EVENTOS DASHBOARD ADMIN
 
-    // Solo Administrador
-    Route::middleware(['role:Administrador'])->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'index']);
-    });
-
-    // Administrador o Comunicaciones
-    Route::middleware(['role:Administrador,Comunicaciones'])->group(function () {
-        Route::post('/comunicados', [ComunicadosController::class, 'store']);
-        Route::put('/comunicados/{id}', [ComunicadosController::class, 'update']);
-        Route::delete('/comunicados/{id}', [ComunicadosController::class, 'destroy']);
-    });
-
-    // RUTA EVENTOS DASHBOARD ADMIN
-    
-    Route::get('/eventos', [EventoController::class, 'index']);
-    Route::post('/eventos', [EventoController::class, 'store']);
-    Route::get('/eventos/{id}', [EventoController::class, 'show']);
-    Route::put('/eventos/{id}', [EventoController::class, 'update']);
-    Route::delete('/eventos/{id}', [EventoController::class, 'destroy']);
+Route::get('/eventos', [EventoController::class, 'index']);
+Route::post('/eventos', [EventoController::class, 'store']);
+Route::get('/eventos/{id}', [EventoController::class, 'show']);
+Route::put('/eventos/{id}', [EventoController::class, 'update']);
+Route::delete('/eventos/{id}', [EventoController::class, 'destroy']);
 
 
-    // RUTA DE COMUNICADOS
+// RUTA DE COMUNICADOS
 
 
-   Route::middleware('jwt.auth')->group(function () {
+Route::middleware('jwt.auth')->group(function () {
     Route::get('/comunicados', [ComunicadosController::class, 'index']);
     Route::post('/comunicados', [ComunicadosController::class, 'store']);
     Route::get('/comunicados/{id}', [ComunicadosController::class, 'show']);
     Route::put('/comunicados/{id}', [ComunicadosController::class, 'update']);
     Route::delete('/comunicados/{id}', [ComunicadosController::class, 'destroy']);
-    });
+});
 
-    // RUTAS DIRECTORIO
+// RUTAS DIRECTORIO
 
-    Route::get('/directorio', [DirectorioController::class, 'index']);
+Route::get('/directorio', [DirectorioController::class, 'index']);
 
-    // RUTAS PERFIL
-    
-   Route::middleware('jwt.auth')->group(function () {
+// RUTAS PERFIL
+
+Route::middleware('jwt.auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'show']);
     Route::put('/perfil', [PerfilController::class, 'update']);
     Route::post('/perfil/foto', [PerfilController::class, 'actualizarFoto']);
@@ -89,3 +92,20 @@ use App\Http\Controllers\API\EducacionController;
     Route::delete('/educaciones/{id}', [EducacionController::class, 'destroy']);
 });
 
+// RUTAS DE CUMPLEAÑOS
+
+Route::get('/cumpleanios', [CumpleaniosController::class, 'index']);
+
+// RUTAS DE ESTADISTICAS
+
+Route::get('/dashboard-estadisticas', [EstadisticasController::class, 'index']);
+
+// RUTAS DE BENEFICIOS
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/beneficios', [BeneficiosController::class, 'index']);
+    Route::post('/beneficios', [BeneficiosController::class, 'store']);
+    Route::get('/beneficios/{id}', [BeneficiosController::class, 'show']);
+    Route::put('/beneficios/{id}', [BeneficiosController::class, 'update']);
+    Route::delete('/beneficios/{id}', [BeneficiosController::class, 'destroy']);
+});

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Megaphone } from "lucide-react";
 import api from "../../services/api";
-import { motion } from "framer-motion";
 import {
     Home,
     Users,
@@ -12,57 +12,234 @@ import {
     FolderOpen,
     ClipboardList,
     BarChart3,
-    PlusCircle,
-    X,
     Link2,
-    Gift,
+    UserCircle,
+    UserCheck,
+    CalendarDays,
+    LayoutDashboard
 } from "lucide-react";
+import { motion } from "framer-motion";
 import DashboardCard from "../../components/Dashboard/DashboardCard";
 import EventosCarousel from "../../components/Evento/EventosCarousel";
 import ComunicadosDashboard from "../../components/Comunicados/ComunicadosDashboard";
-import Perfil from "../Perfil/PerfilDashboard";
-import { UserCircle } from "lucide-react";
 import DirectorioDashboard from "../Directorio/DirectorioDashboard";
+import Perfil from "../Perfil/PerfilDashboard";
+import CumpleaniosCard from "../../components/Cumpleanios/CumpleaniosCard";
+import CumpleaniosModal from "../../components/Cumpleanios/CumpleaniosModal";
+import BeneficiosCard from "../../components/Beneficios/BeneficiosCard";
+import BeneficiosModal from "../../components/Beneficios/BeneficiosModal";
 
-/**
- * ADMIN DASHBOARD - MAXIALIMENTOS
- * Estructura general del panel de administrador con:
- * - Sidebar animada
- * - Sección de bienvenida y perfil
- * - Carrusel dinámico de eventos
- * - Tarjetas tipo “Bring IT” con acciones
- * - Modal para crear comunicados internos
- */
+
 
 export default function AdminDashboard() {
+    const [beneficios, setBeneficios] = useState([]);
+    const [cargandoBeneficio, setCargandoBeneficio] = useState(false);
+    const [showModalBeneficios, setShowModalBeneficios] = useState(false);
+    const [showFormBeneficio, setShowFormBeneficio] = useState(false);
     const [user, setUser] = useState(null);
     const [active, setActive] = useState("inicio");
     const [isOpen, setIsOpen] = useState(true);
-    const [showModal, setShowModal] = useState(false);
-    const [preview, setPreview] = useState("");
-    const navigate = useNavigate();
     const [comunicados, setComunicados] = useState([]);
+    const [showModalCumple, setShowModalCumple] = useState(false);
+    const [cumpleData, setCumpleData] = useState(null);
+    const [stats, setStats] = useState(null);
 
-
-    /** ==============================
-     * 1️⃣ FETCH USER DATA
-     * ============================== */
+    // Cargar beneficios
     useEffect(() => {
-        const fetchUser = async () => {
+        const loadBeneficios = async () => {
             try {
-                const res = await api.get("/me");
-                setUser(res.data.user);
+                const token = localStorage.getItem("token");
+                const res = await api.get("/beneficios", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setBeneficios(res.data.data || []);
+            } catch (error) {
+                console.error("Error cargando beneficios:", error);
+            }
+        };
+        loadBeneficios();
+    }, []);
+
+
+    const loadStats = async () => {
+        try {
+            const res = await api.get("/dashboard-estadisticas");
+            setStats(res.data);
+        } catch (err) {
+            console.error("Error cargando estadísticas:", err);
+        }
+    };
+
+
+    useEffect(() => {
+        loadStats();
+    }, []);
+
+    // Crear beneficio
+    const crearBeneficio = async (formData) => {
+        try {
+            setCargandoBeneficio(true);
+
+            const res = await api.post("/beneficios", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (res.data.success) {
+                setBeneficios(prev => [...prev, res.data.data]);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error creando beneficio.");
+        } finally {
+            setCargandoBeneficio(false);
+        }
+    };
+
+    // Editar beneficio
+    const editarBeneficio = async (id, formData) => {
+        try {
+            setCargandoBeneficio(true);
+
+            // IMPORTANTÍSIMO
+            formData.append("_method", "PUT");
+
+            const res = await api.post(`/beneficios/${id}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (res.data.success) {
+                setBeneficios(prev =>
+                    prev.map(b => (b.id === id ? res.data.data : b))
+                );
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error editando beneficio.");
+        } finally {
+            setCargandoBeneficio(false);
+        }
+    };
+
+    // Eliminar beneficio
+    const eliminarBeneficio = async (id) => {
+        try {
+            setCargandoBeneficio(true);
+            await api.delete(`/beneficios/${id}`);
+            setBeneficios(prev => prev.filter(b => b.id !== id));
+        } catch (err) {
+            alert("Error eliminando beneficio.");
+        } finally {
+            setCargandoBeneficio(false);
+        }
+    };
+
+    // =======================
+    // WIDGETS SUPERIORES
+    // =======================
+    const widgets = (
+        <>
+            <motion.div
+                whileHover={{ scale: 1.03 }}
+                className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#397C3C]"
+            >
+                <UserCheck className="text-[#397C3C]" size={26} />
+                <p className="text-gray-600 text-sm">Empleados activos</p>
+                <h3 className="text-2xl font-bold text-[#397C3C]">
+                    {stats ? stats.empleados_activos : "..."}
+                </h3>
+            </motion.div>
+
+            <motion.div
+                whileHover={{ scale: 1.03 }}
+                className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#5bad5c]"
+            >
+                <FileText className="text-[#397C3C]" size={26} />
+                <p className="text-gray-600 text-sm">Comunicados este mes</p>
+                <h3 className="text-2xl font-bold text-[#397C3C]">
+                    {stats ? stats.comunicados_mes : "..."}
+                </h3>
+            </motion.div>
+
+            <motion.div
+                whileHover={{ scale: 1.03 }}
+                className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#397C3C]"
+            >
+                <CalendarDays className="text-[#397C3C]" size={26} />
+                <p className="text-gray-600 text-sm">Eventos activos</p>
+                <h3 className="text-2xl font-bold text-[#397C3C]">
+                    {stats ? stats.eventos_activos : "..."}
+                </h3>
+            </motion.div>
+
+            <motion.div
+                whileHover={{ scale: 1.03 }}
+                className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#5bad5c]"
+            >
+                <LayoutDashboard className="text-[#397C3C]" size={26} />
+                <p className="text-gray-600 text-sm">Módulos del sistema</p>
+                <h3 className="text-2xl font-bold text-[#397C3C]">
+                    {stats ? stats.modulos : "..."}
+                </h3>
+            </motion.div>
+        </>
+    );
+
+
+
+    /* ----------------------------------------------
+       Cargar usuario autenticado
+    ------------------------------------------------ */
+    useEffect(() => {
+        const loadUser = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await api.get("/perfil", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (res.data?.data) {
+                    setUser(res.data.data);
+                }
             } catch {
                 localStorage.removeItem("token");
                 navigate("/login");
             }
         };
-        fetchUser();
-    }, [navigate]);
+        loadUser();
+    }, []);
 
-    /** ==============================
-     * 2️⃣ HANDLE LOGOUT
-     * ============================== */
+    /* ----------------------------------------------
+       Cargar comunicados recientes
+    ------------------------------------------------ */
+    useEffect(() => {
+        const loadComunicados = async () => {
+            try {
+                const res = await api.get("/comunicados");
+                setComunicados(res.data.data || []);
+            } catch {
+                setComunicados([]);
+            }
+        };
+        loadComunicados();
+    }, []);
+
+    /* ----------------------------------------------
+       Abrir modal de cumpleaños
+    ------------------------------------------------ */
+    const abrirModalCumple = () => {
+        api.get("/cumpleanios").then((res) => {
+            setCumpleData(res.data);
+            setShowModalCumple(true);
+        });
+    };
+
+    /* ----------------------------------------------
+       Logout
+    ------------------------------------------------ */
     const handleLogout = async () => {
         try {
             await api.post("/logout");
@@ -71,45 +248,34 @@ export default function AdminDashboard() {
         navigate("/login");
     };
 
-    /** ==============================
-     * 4️⃣ CAMBIO DE FOTO DE PERFIL
-     * ============================== */
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => setPreview(reader.result);
-            reader.readAsDataURL(file);
-        }
-    };
-
-    /** ==============================
-     *  🔄 FETCH COMUNICADOS RECIENTES
-     * ============================== */
+    /* ----------------------------------------------
+           Cumpleaños y aniversarios
+        ------------------------------------------------ */
+    // Cargar información de cumpleaños y aniversarios
     useEffect(() => {
-        const fetchComunicados = async () => {
+        const loadCumple = async () => {
             try {
-                const res = await api.get("/comunicados");
-                // Ajuste según el formato real del backend
-                setComunicados(res.data.data || []);
+                const res = await api.get("/cumpleanios");
+                setCumpleData(res.data);
             } catch (err) {
-                console.error("Error al obtener comunicados:", err);
-                setComunicados([]);
+                console.error("Error al obtener cumpleanios:", err);
             }
         };
-        fetchComunicados();
+
+        loadCumple();
     }, []);
 
 
 
-    if (user?.rol !== "Administrador") {
-        return null;
-    }
+    /* ----------------------------------------------
+       Verificación de rol
+    ------------------------------------------------ */
+    if (user?.rol !== "Administrador") return null;
 
 
-    /** ==============================
-     * 5️⃣ MENÚ LATERAL
-     * ============================== */
+    /* ----------------------------------------------
+       Menú lateral
+    ------------------------------------------------ */
     const menuItems = [
         { id: "inicio", label: "Inicio", icon: <Home size={20} /> },
         { id: "comunicados", label: "Comunicados", icon: <FileText size={20} /> },
@@ -119,139 +285,155 @@ export default function AdminDashboard() {
         { id: "reportes", label: "Reportes", icon: <BarChart3 size={20} /> },
         { id: "config", label: "Configuración", icon: <Settings size={20} /> },
         { id: "perfil", label: "Perfil", icon: <UserCircle size={20} /> },
-
-
     ];
 
-    /** ==============================
-     * 6️⃣ SECCIONES DEL DASHBOARD
-     * ============================== */
+
+
+
+
+    /* ----------------------------------------------
+       Contenido dinámico del dashboard
+    ------------------------------------------------ */
     const renderSection = () => {
         switch (active) {
-            /** --- SECCIÓN INICIO --- */
             case "inicio":
                 return (
                     <div className="space-y-10">
-                        {/* --- Encabezado superior tipo cápsula --- */}
-                        <section className="bg-white shadow-md rounded-full px-10 py-7 flex justify-between items-center">
-                            {/* Izquierda: Foto e información */}
-                            <div className="flex items-center gap-8">
-                                <img
-                                    src={
-                                        preview ||
-                                        user.foto ||
-                                        `https://ui-avatars.com/api/?name=${user.nombre}&background=397C3C&color=fff`
-                                    }
-                                    alt="avatar"
-                                    className="w-24 h-24 rounded-2xl object-cover shadow-md border-2 border-[#397C3C]"
-                                />
 
-                                <div className="flex flex-col">
-                                    <h1 className="text-3xl font-extrabold text-[#397C3C] leading-tight">
-                                        Bienvenido, {user.nombre}
-                                    </h1>
-                                    <p className="text-gray-700 text-lg font-medium">
-                                        {user.cargo || "Cargo no definido"}
-                                    </p>
-                                    <button
-                                        onClick={() => setActive("perfil")}
-                                        className="text-[#397C3C] mt-1 text-sm font-semibold hover:underline w-fit transition"
-                                    >
-                                        Ver mi perfil →
-                                    </button>
-                                </div>
+                        {/* Encabezado Premium */}
+                        <section className="
+                rounded-3xl p-8 bg-gradient-to-r 
+                from-[#397C3C] to-[#5bad5c] 
+                text-white shadow-xl 
+                relative overflow-hidden">
+
+                            <div className="absolute right-5 top-5 opacity-20">
+                                <Users size={120} />
                             </div>
 
-                            {/* Derecha: Fecha y configuración */}
-                            <div className="flex flex-col items-end">
-                                <p className="text-gray-600 text-sm font-medium mb-2">
-                                    {new Date().toLocaleDateString("es-CO", {
-                                        weekday: "long",
-                                        year: "numeric",
-                                        month: "long",
-                                        day: "numeric",
-                                    })}
-                                </p>
+                            <div className="relative z-10 flex justify-between items-center">
+                                <div className="flex items-center gap-6">
+                                    <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white shadow-md">
+                                        {user?.foto_perfil ? (
+                                            <img
+                                                src={
+                                                    user.foto_perfil.startsWith("http")
+                                                        ? user.foto_perfil
+                                                        : `http://127.0.0.1:8000/storage/${user.foto_perfil}`
+                                                }
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-gray-100">Avatar</span>
+                                        )}
+                                    </div>
 
-                                <button className="flex items-center gap-2 text-[#397C3C] hover:text-[#2f612f] transition">
-                                    <Settings size={22} />
-                                    <span className="text-base font-medium">Configuración</span>
-                                </button>
+                                    <div>
+                                        <h1 className="text-4xl font-extrabold">
+                                            Bienvenido, {user.nombre}
+                                        </h1>
+
+                                        <p className="text-lg opacity-90">{user.cargo}</p>
+
+                                        <button
+                                            onClick={() => setActive("perfil")}
+                                            className="
+                                                    mt-3 
+                                                    relative 
+                                                    text-white font-semibold 
+                                                    text-sm 
+                                                    transition-all 
+                                                    hover:text-white 
+                                                    pl-1
+                                                    after:content-[''] 
+                                                    after:absolute 
+                                                    after:left-0 
+                                                    after:bottom-[-3px] 
+                                                    after:w-0 
+                                                    after:h-[2px] 
+                                                    after:bg-white 
+                                                    after:transition-all 
+                                                    after:duration-300 
+                                                    hover:after:w-full
+                                                    hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.7)]
+                                                "
+                                        >
+                                            Ver mi perfil →
+                                        </button>
+
+                                    </div>
+                                </div>
+                                {/* Resumen del día */}
+                                <div className="text-right flex flex-col items-end gap-2">
+                                    <p className="text-sm opacity-90">
+                                        {new Date().toLocaleDateString("es-CO", {
+                                            weekday: "long",
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                        })}
+                                    </p>
+
+                                    {/* Botón de configuración */}
+                                    <button
+                                        onClick={() => setActive("config")}
+                                        className="
+                                            flex items-center gap-2 
+                                            bg-white/20 
+                                            hover:bg-white/30 
+                                            text-white 
+                                            text-sm 
+                                            font-medium 
+                                            px-4 py-2 
+                                            rounded-full 
+                                            border border-white/30 
+                                            transition
+                                        ">
+                                        <Settings size={16} />
+                                        Configuración
+                                    </button>
+                                </div>
+
                             </div>
                         </section>
 
-                        {/* --- Grid principal tipo BringIT --- */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-                            {/* ---------------- IZQUIERDA ---------------- */}
-                            <div className="col-span-1 flex flex-col gap-6 h-full">
-                                <div className="flex flex-col justify-between flex-1">
-                                    <DashboardCard title="Estado General" className="flex-1 min-h-[160px]">
-                                        <BarChart3 className="text-[#397C3C] mb-3" size={36} />
-                                        <p className="text-gray-700 mb-4 text-lg leading-relaxed">
-                                            Sistema funcionando correctamente. Última revisión hace 3 horas.
-                                        </p>
-                                        <button className="bg-[#397C3C] text-white px-5 py-2 rounded-lg hover:bg-[#2f612f] transition">
-                                            Ver detalles
-                                        </button>
-                                    </DashboardCard>
-                                </div>
 
-                                <div className="flex flex-col justify-between flex-1">
-                                    <DashboardCard title="Cumpleaños y Aniversarios" className="flex-1 min-h-[160px]">
-                                        <Gift className="text-[#397C3C] mb-3" size={36} />
-                                        <ul className="text-gray-700 space-y-2">
-                                            <li>🎉 <strong>Andrea López</strong> - 6 de noviembre</li>
-                                            <li>🎊 <strong>Carlos Jiménez</strong> - 10 años en la empresa</li>
-                                            <li>🎂 <strong>Valeria Torres</strong> - 12 de noviembre</li>
-                                        </ul>
-                                    </DashboardCard>
-                                </div>
+                        {/* WIDGETS */}
+                        <section className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+                            {widgets}
+                        </section>
 
-                                <div className="flex flex-col justify-between flex-1">
-                                    <DashboardCard title="Mensajes Recientes" className="flex-1 min-h-[180px]">
-                                        <ul className="space-y-3">
-                                            <li className="flex items-center gap-3">
-                                                <img src="https://i.pravatar.cc/40?u=1" className="w-8 h-8 rounded-full" />
-                                                <div>
-                                                    <p className="font-medium text-[#397C3C]">Laura Gómez</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        ¿Confirmas la reunión de mañana?
-                                                    </p>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-center gap-3">
-                                                <img src="https://i.pravatar.cc/40?u=2" className="w-8 h-8 rounded-full" />
-                                                <div>
-                                                    <p className="font-medium text-[#397C3C]">Andrés Rojas</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        Ya subí el documento de control.
-                                                    </p>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-center gap-3">
-                                                <img src="https://i.pravatar.cc/40?u=3" className="w-8 h-8 rounded-full" />
-                                                <div>
-                                                    <p className="font-medium text-[#397C3C]">Paola Martínez</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        Se publicó el nuevo comunicado.
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <button className="text-[#397C3C] mt-3 text-sm hover:underline">
-                                            Ver todos los mensajes →
-                                        </button>
-                                    </DashboardCard>
-                                </div>
-                            </div>
+                        {/* CONTENIDO PRINCIPAL */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                            {/* ---------------- DERECHA: EVENTOS Y COMUNICADOS ---------------- */}
-                            <div className="col-span-2 flex flex-col gap-6">
-                                <DashboardCard title="" className="flex-1 min-h-[500px]">
-                                    <EventosCarousel />
+                            {/* IZQUIERDA */}
+                            <div className="flex flex-col gap-6">
+
+                                <DashboardCard className="!p-4">
+                                    <BeneficiosCard
+                                        beneficios={beneficios}
+                                        onVerMas={() => setShowModalBeneficios(true)}
+                                    />
                                 </DashboardCard>
 
-                                {/* === COMUNICADOS RECIENTES === */}
+                                <DashboardCard className="!p-4">
+                                    <CumpleaniosCard
+                                        data={cumpleData}
+                                        onVerMas={abrirModalCumple}
+                                    />
+                                </DashboardCard>
+
+                                <DashboardCard title="Mensajes Recientes">
+                                    <p className="text-gray-600">No hay mensajes nuevos.</p>
+                                </DashboardCard>
+                            </div>
+
+                            {/* DERECHA */}
+                            <div className="col-span-2 flex flex-col gap-6">
+                                <DashboardCard>
+                                    <EventosCarousel onChange={loadStats} />
+                                </DashboardCard>
+
                                 <DashboardCard
                                     title={
                                         <div className="flex items-center gap-2 text-[#397C3C] font-semibold text-lg">
@@ -261,24 +443,15 @@ export default function AdminDashboard() {
                                     }
                                     className="flex-1"
                                 >
-                                    {/* Contenedor con scroll interno */}
-                                    <div className="max-h-[260px] overflow-y-auto pr-2 space-y-4">
+                                    <div className="min-h-[260px] max-h-[260px] overflow-y-auto pr-2 space-y-6">
                                         {comunicados.length > 0 ? (
                                             comunicados.map((com, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="border-b border-gray-200 pb-3 last:border-none"
-                                                >
-                                                    <p className="text-[#397C3C] font-semibold mb-1">
+                                                <div key={index} className="pb-4 border-b border-gray-200">
+                                                    <p className="text-[#397C3C] font-semibold text-[15px] mb-1">
                                                         {com.titulo}
                                                     </p>
 
-                                                    {/* Texto truncado con límite */}
-                                                    <p className="text-gray-600 text-sm line-clamp-3 overflow-hidden">
-                                                        {com.mensaje}
-                                                    </p>
-
-                                                    <p className="text-gray-400 text-xs mt-1">
+                                                    <p className="text-gray-400 text-xs mb-1">
                                                         {new Date(com.created_at).toLocaleDateString("es-CO", {
                                                             weekday: "long",
                                                             day: "numeric",
@@ -287,10 +460,13 @@ export default function AdminDashboard() {
                                                         })}
                                                     </p>
 
-                                                    {/* Botón Ver más (lleva al módulo completo) */}
+                                                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                                                        {com.mensaje}
+                                                    </p>
+
                                                     <button
                                                         onClick={() => setActive("comunicados")}
-                                                        className="text-[#397C3C] text-sm font-medium mt-1 hover:underline"
+                                                        className="text-[#397C3C] text-sm font-medium hover:underline"
                                                     >
                                                         Ver más →
                                                     </button>
@@ -303,126 +479,108 @@ export default function AdminDashboard() {
                                         )}
                                     </div>
 
-                                    {/* Botón principal inferior */}
                                     <button
                                         onClick={() => setActive("comunicados")}
-                                        className="bg-[#397C3C] mt-4 flex items-center justify-center gap-2 text-white px-5 py-2 rounded-lg hover:bg-[#2f612f] transition w-full"
+                                        className="bg-[#397C3C] mt-6 flex items-center justify-center gap-2 text-white px-5 py-3 rounded-lg hover:bg-[#2f612f] transition w-full text-sm font-medium"
                                     >
                                         <FileText size={18} /> Ver todos los comunicados
                                     </button>
                                 </DashboardCard>
                             </div>
                         </div>
-                        {/* ---------------- ABAJO ---------------- */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <DashboardCard title="Usuarios Activos">
-                                <Users className="text-[#397C3C] mb-3" size={36} />
-                                <p className="text-gray-700 mb-4 text-lg leading-relaxed">
-                                    Gestión de personal y accesos del sistema.
-                                </p>
-                                <button className="bg-[#397C3C] text-white px-5 py-2 rounded-lg hover:bg-[#2f612f] transition">
-                                    Ver usuarios
-                                </button>
-                            </DashboardCard>
-
-                            <DashboardCard title="Reportes del Sistema">
-                                <BarChart3 className="text-[#397C3C] mb-3" size={36} />
-                                <p className="text-gray-700 mb-4 text-lg leading-relaxed">
-                                    Visualiza métricas, logs y actividad general.
-                                </p>
-                                <button className="bg-[#397C3C] text-white px-5 py-2 rounded-lg hover:bg-[#2f612f] transition">
-                                    Ver reportes
-                                </button>
-                            </DashboardCard>
-
-                            <DashboardCard title="Enlaces de la Empresa">
-                                <Link2 className="text-[#397C3C] mb-3" size={36} />
-                                <ul className="text-[#397C3C] space-y-2 font-medium">
-                                    <li className="hover:underline cursor-pointer">Manual Corporativo</li>
-                                    <li className="hover:underline cursor-pointer">Calendario General</li>
-                                    <li className="hover:underline cursor-pointer">Canal Ético</li>
-                                </ul>
-                            </DashboardCard>
-                        </div>
                     </div>
                 );
-            /** --- SECCIÓN COMUNICADOS --- */
+
             case "comunicados":
                 return <ComunicadosDashboard />;
 
-            /** --- SECCIÓN COMUNICADOS --- */
             case "perfil":
                 return <Perfil />;
 
-            /** --- SECCIONES EN DESARROLLO --- */
             case "directorio":
-                return <DirectorioDashboard />
-                
-                
+                return <DirectorioDashboard />;
+
+            default:
+                return null;
         }
     };
-    /** ==============================
-     * 7️⃣ ESTRUCTURA GENERAL DEL FRONT
-     * ============================== */
+
+
+    /* ----------------------------------------------
+       Render principal
+    ------------------------------------------------ */
     return (
         <div className="flex min-h-screen bg-[#f6f6f6] overflow-hidden">
-            {/* ===== SIDEBAR IZQUIERDO ===== */}
+
+            {/* Sidebar */}
             <motion.aside
                 animate={{ width: isOpen ? 230 : 80 }}
-                transition={{ duration: 0.25, ease: "easeInOut" }}
-                className="bg-[#397C3C] text-white flex flex-col justify-between py-6 fixed top-0 left-0 h-full z-50 shadow-xl"
+                className="bg-[#397C3C] text-white fixed top-0 left-0 h-full py-6 flex flex-col justify-between"
             >
-                {/* LOGO + MENÚ */}
                 <div>
-                    <div className="flex justify-center mb-8 font-bold text-2xl tracking-wide">
+                    <div className="text-center font-bold text-2xl mb-8">
                         {isOpen ? "MaxiAdmin" : "M"}
                     </div>
 
-                    <nav className="flex flex-col mt-2">
+                    <nav>
                         {menuItems.map((item) => (
                             <button
                                 key={item.id}
                                 onClick={() => setActive(item.id)}
-                                className={`flex items-center gap-3 py-3 transition hover:bg-[#2f612f] ${active === item.id ? "bg-[#2f612f]" : ""
-                                    } ${isOpen ? "px-6" : "justify-center"}`}
+                                className={`flex items-center gap-3 py-3 w-full hover:bg-[#2f612f] transition
+                                ${active === item.id ? "bg-[#2f612f]" : ""}
+                                ${isOpen ? "px-6" : "justify-center"}`}
                             >
                                 {item.icon}
-                                {isOpen && <span className="text-sm">{item.label}</span>}
+                                {isOpen && <span>{item.label}</span>}
                             </button>
                         ))}
                     </nav>
                 </div>
 
-                {/* OPCIONES INFERIORES */}
-                <div
-                    className={`flex flex-col ${isOpen ? "px-6" : "items-center"} space-y-3`}
-                >
+                <div className={`${isOpen ? "px-6" : "items-center"} flex flex-col space-y-3`}>
                     <button
                         onClick={handleLogout}
-                        className={`flex items-center gap-2 w-full hover:bg-[#2f612f] py-2 rounded-lg transition ${isOpen ? "px-3" : "justify-center"
-                            }`}
+                        className={`flex items-center gap-2 py-2 hover:bg-[#2f612f] rounded-lg transition w-full
+                        ${isOpen ? "px-3" : "justify-center"}`}
                     >
                         <LogOut size={20} />
-                        {isOpen && <span className="text-sm">Salir</span>}
+                        {isOpen && <span>Salir</span>}
                     </button>
 
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className={`flex items-center gap-2 w-full hover:bg-[#2f612f] py-2 rounded-lg transition ${isOpen ? "px-3" : "justify-center"
-                            }`}
+                        className={`flex items-center gap-2 py-2 hover:bg-[#2f612f] rounded-lg transition w-full
+                        ${isOpen ? "px-3" : "justify-center"}`}
                     >
                         <Menu size={22} />
-                        {isOpen && <span className="text-sm">Menú</span>}
+                        {isOpen && <span>Menú</span>}
                     </button>
                 </div>
             </motion.aside>
 
-            {/* ===== CONTENIDO PRINCIPAL ===== */}
-            <main
-                className={`flex-1 p-10 min-h-screen overflow-y-auto transition-all duration-300 ${isOpen ? "ml-[230px]" : "ml-[80px]"
-                    }`}
-            >
-                <div className="space-y-10">{renderSection()}</div>
+            {/* Contenido */}
+            <main className={`flex-1 p-10 transition-all ${isOpen ? "ml-[230px]" : "ml-[80px]"}`}>
+                {renderSection()}
+
+                {/* Modal Cumpleaños */}
+                {showModalCumple && (
+                    <CumpleaniosModal
+                        data={cumpleData}
+                        onClose={() => setShowModalCumple(false)}
+                    />
+                )}
+                {/* Modal Beneficios */}
+                {showModalBeneficios && (
+                    <BeneficiosModal
+                        data={beneficios}
+                        onClose={() => setShowModalBeneficios(false)}
+                        onCreate={crearBeneficio}
+                        onEdit={editarBeneficio}
+                        onDelete={eliminarBeneficio}
+                        cargando={cargandoBeneficio}
+                    />
+                )}
             </main>
         </div>
     );
