@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\EducacionController;
 use App\Http\Controllers\Api\CumpleaniosController;
 use App\Http\Controllers\Api\EstadisticasController;
 use App\Http\Controllers\Api\BeneficiosController;
+use App\Http\Controllers\Api\ConfiguracionController;
 
 // RUTAS DE LOGUEO
 
@@ -109,3 +110,8 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/beneficios/{id}', [BeneficiosController::class, 'update']);
     Route::delete('/beneficios/{id}', [BeneficiosController::class, 'destroy']);
 });
+
+// RUTAS DE CONFIGURACIÓN DEL SISTEMA
+
+Route::get('/configuracion', [ConfiguracionController::class, 'index']);
+Route::put('/configuracion', [ConfiguracionController::class, 'update']);
