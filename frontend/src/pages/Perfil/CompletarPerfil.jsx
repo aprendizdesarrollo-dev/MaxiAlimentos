@@ -6,7 +6,7 @@ import logo from "../../assets/logo.png";
 export default function CompletarPerfil() {
   const navigate = useNavigate();
 
-  // 🧩 Todos los campos que puede tener el perfil
+  // Todos los campos que puede tener el perfil
   const [form, setForm] = useState({
     cedula: "",
     nombre: "",
