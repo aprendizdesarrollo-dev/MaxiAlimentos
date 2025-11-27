@@ -8,6 +8,7 @@ import ComunicadosDashboard from "../../components/Comunicados/ComunicadosDashbo
 import DirectorioDashboard from "../Directorio/DirectorioDashboard";
 import Perfil from "../Perfil/PerfilDashboard";
 import ConfiguracionSistema from "../Configuracion/ConfiguracionSistema";
+import DocumentosDashboard from "../Documentos/DocumentosDashboard";
 
 import CumpleaniosModal from "../../components/Cumpleanios/CumpleaniosModal";
 import BeneficiosModal from "../../components/Beneficios/BeneficiosModal";
@@ -102,6 +103,8 @@ export default function AdminDashboard() {
                 return <DirectorioDashboard />;
             case "config":
                 return <ConfiguracionSistema />;
+            case "documentos":
+                return <DocumentosDashboard />;
             default:
                 return null;
         }

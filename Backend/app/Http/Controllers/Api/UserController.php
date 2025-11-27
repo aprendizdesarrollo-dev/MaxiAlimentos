@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     /**
-     * ✅ Actualiza los datos del perfil del usuario autenticado.
+     *  Actualiza los datos del perfil del usuario autenticado.
      * Ruta: PUT /api/user/update
      */
         public function update(Request $request)

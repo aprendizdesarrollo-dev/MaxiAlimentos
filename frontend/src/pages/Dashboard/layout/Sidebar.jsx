@@ -22,8 +22,6 @@ export default function Sidebar({ active, setActive, isOpen, setIsOpen, onLogout
         { id: "comunicados", label: "Comunicados", icon: <FileText size={20} /> },
         { id: "directorio", label: "Directorio", icon: <Users size={20} /> },
         { id: "documentos", label: "Documentos", icon: <FolderOpen size={20} /> },
-        { id: "mesa", label: "Mesa de ayuda", icon: <ClipboardList size={20} /> },
-        { id: "reportes", label: "Reportes", icon: <BarChart3 size={20} /> },
         { id: "config", label: "Configuración", icon: <Settings size={20} /> },
         { id: "perfil", label: "Perfil", icon: <UserCircle size={20} /> },
     ];
