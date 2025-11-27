@@ -2,7 +2,7 @@ import Header from "../layout/Header";
 import DashboardCard from "../../../components/Dashboard/DashboardCard";
 import BeneficiosCard from "../../../components/Beneficios/BeneficiosCard";
 import CumpleaniosCard from "../../../components/Cumpleanios/CumpleaniosCard";
-import EventosCarousel from "../../../components/Evento/EventosCarousel";
+import EventosCarousel from "../../../components/Evento/EventoCarousel";
 import { motion } from "framer-motion";
 import { UserCheck, FileText, CalendarDays, LayoutDashboard } from "lucide-react";
 
