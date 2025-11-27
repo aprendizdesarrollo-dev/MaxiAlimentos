@@ -23,8 +23,13 @@ import CompletarPerfil from "./pages/Perfil/CompletarPerfil";
 // EVENTOS
 import CrearEvento from "./pages/Evento/CrearEvento";
 
+import ComunicadosDashboard from "./components/Comunicados/ComunicadosDashboard";
+import BeneficiosModal from "./components/Beneficios/BeneficiosModal";
 
-// 🔒 Ruta privada
+
+
+
+// Ruta privada
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" replace />;
@@ -46,8 +51,24 @@ function App() {
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/crear-evento" element={<CrearEvento />} />
           <Route path="/directorio" element={<DirectorioDashboard />} />
+          <Route
+            path="/comunicados"
+            element={
+              <PrivateRoute>
+                <ComunicadosDashboard />
+              </PrivateRoute>
+            }
+          />
 
-          {/* 🔒 Rutas protegidas */}
+          <Route
+            path="/beneficios"
+            element={
+              <PrivateRoute>
+                <BeneficiosModal />
+              </PrivateRoute>
+            }
+          />
+          {/*Rutas protegidas */}
           <Route
             path="/dashboard"
             element={
@@ -77,7 +98,7 @@ function App() {
           />
         </Routes>
 
-        {/* 🔔 Toaster global */}
+        {/* Toaster global */}
         <Toaster
           position="top-right"
           toastOptions={{

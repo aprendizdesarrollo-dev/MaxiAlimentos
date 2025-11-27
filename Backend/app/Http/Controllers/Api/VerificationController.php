@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificationCodeMail;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Helpers\NotificacionHelper;
 
 class VerificationController extends Controller
 {
@@ -27,7 +28,7 @@ class VerificationController extends Controller
             'estado_civil'      => 'nullable|string|max:100',
             'telefono_personal' => 'nullable|string|max:50',
             'correo'            => 'required|string|email|max:255|unique:users',
-            'correo_corporativo'=> 'nullable|string|email|max:255',
+            'correo_corporativo' => 'nullable|string|email|max:255',
             'correo_personal'   => 'nullable|string|email|max:255',
             'direccion'         => 'nullable|string|max:255',
             'ciudad'            => 'nullable|string|max:100',
@@ -54,7 +55,7 @@ class VerificationController extends Controller
             'estado_civil'      => $request->estado_civil,
             'telefono_personal' => $request->telefono_personal,
             'correo'            => $validated['correo'],
-            'correo_corporativo'=> $request->correo_corporativo,
+            'correo_corporativo' => $request->correo_corporativo,
             'correo_personal'   => $request->correo_personal,
             'direccion'         => $request->direccion,
             'ciudad'            => $request->ciudad,
@@ -108,29 +109,37 @@ class VerificationController extends Controller
         // Crear usuario verificado
         $user = User::create([
 
-        'nombre' => $data['nombre'],
-        'segundo_nombre' => $data['segundo_nombre'] ?? null,
-        'apellido' => $data['apellido'],
-        'cedula' => $data['cedula'],
-        'genero' => $data['genero'] ?? null,
-        'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
-        'estado_civil' => $data['estado_civil'] ?? null,
-        'telefono_personal' => $data['telefono_personal'] ?? null,
-        'correo' => $data['correo'],
-        'correo_corporativo' => $data['correo_corporativo'] ?? null,
-        'correo_personal' => $data['correo_personal'] ?? null,
-        'direccion' => $data['direccion'] ?? null,
-        'ciudad' => $data['ciudad'] ?? null,
-        'departamento' => $data['departamento'] ?? null,
-        'pais' => $data['pais'] ?? null,
-        'cargo' => $data['cargo'],
-        'area' => $data['area'],
-        'jefe_directo' => $data['jefe_directo'] ?? null,
-        'rol' => $data['rol'] ?? 'Empleado',
-        'password' => Hash::make($data['password']), 
-        'is_verified' => true,
-        'email_verified_at' => Carbon::now(),
-    ]);
+            'nombre' => $data['nombre'],
+            'segundo_nombre' => $data['segundo_nombre'] ?? null,
+            'apellido' => $data['apellido'],
+            'cedula' => $data['cedula'],
+            'genero' => $data['genero'] ?? null,
+            'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null,
+            'estado_civil' => $data['estado_civil'] ?? null,
+            'telefono_personal' => $data['telefono_personal'] ?? null,
+            'correo' => $data['correo'],
+            'correo_corporativo' => $data['correo_corporativo'] ?? null,
+            'correo_personal' => $data['correo_personal'] ?? null,
+            'direccion' => $data['direccion'] ?? null,
+            'ciudad' => $data['ciudad'] ?? null,
+            'departamento' => $data['departamento'] ?? null,
+            'pais' => $data['pais'] ?? null,
+            'cargo' => $data['cargo'],
+            'area' => $data['area'],
+            'jefe_directo' => $data['jefe_directo'] ?? null,
+            'rol' => $data['rol'] ?? 'Empleado',
+            'password' => Hash::make($data['password']),
+            'is_verified' => true,
+            'email_verified_at' => Carbon::now(),
+        ]);
+
+        NotificacionHelper::enviar(
+            'Nuevo empleado registrado',
+            $user->nombre . ' se ha unido a la empresa',
+            'empleado',
+            $user->id
+        );
+
 
         // Eliminar datos temporales
         Cache::forget('verify_' . $validated['correo']);
