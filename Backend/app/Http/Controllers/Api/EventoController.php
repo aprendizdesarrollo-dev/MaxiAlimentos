@@ -7,6 +7,7 @@ use App\Models\Evento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\NotificacionHelper;
 
 class EventoController extends Controller
 {
@@ -32,6 +33,13 @@ class EventoController extends Controller
         $evento->titulo = $request->titulo;
         $evento->descripcion = $request->descripcion;
         $evento->fecha = $request->fecha;
+
+        NotificacionHelper::enviar(
+            'Nuevo evento creado',
+            $evento->titulo,
+            'evento',
+            $evento->id
+        );
 
         //  Guardar imagen si se envía
         if ($request->hasFile('imagen')) {

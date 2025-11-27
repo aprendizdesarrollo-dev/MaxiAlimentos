@@ -2,6 +2,7 @@ import { X, BadgeCheck, PlusCircle, Pencil, Trash2, Image as ImageIcon } from "l
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { useNotificaciones } from "../../hooks/useNotificaciones";
 
 // Helper para armar la URL de imagen
 const getImageUrl = (ruta) => {
@@ -17,10 +18,16 @@ export default function BeneficiosModal({
     onEdit,
     onDelete,
 }) {
+
+    // 🔥 AQUÍ SÍ — LOS HOOKS VAN DENTRO DEL COMPONENTE
+    const { cargar } = useNotificaciones();
+
     const [showForm, setShowForm] = useState(false);
     const [editando, setEditando] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [cargando, setCargando] = useState(false);
+
+
 
     return (
         <motion.div
@@ -104,11 +111,10 @@ export default function BeneficiosModal({
 
                                                 {b.estado && (
                                                     <span
-                                                        className={`px-2 py-[2px] rounded-full border text-[11px] ${
-                                                            b.estado === "activo"
-                                                                ? "border-green-500 text-green-700 bg-green-50"
-                                                                : "border-gray-400 text-gray-600 bg-gray-100"
-                                                        }`}
+                                                        className={`px-2 py-[2px] rounded-full border text-[11px] ${b.estado === "activo"
+                                                            ? "border-green-500 text-green-700 bg-green-50"
+                                                            : "border-gray-400 text-gray-600 bg-gray-100"
+                                                            }`}
                                                     >
                                                         {b.estado === "activo" ? "Activo" : "Inactivo"}
                                                     </span>
@@ -202,6 +208,9 @@ export default function BeneficiosModal({
                                     } else {
                                         await onCreate(fd);
                                         toast.success("Beneficio creado correctamente");
+
+                                        // RECARGAR NOTIFICACIONES
+                                        cargar();
                                     }
 
                                     setShowForm(false);
@@ -209,6 +218,7 @@ export default function BeneficiosModal({
                                     console.error(err);
                                     toast.error("Error al guardar el beneficio");
                                 }
+
 
                                 setCargando(false);
                             }}

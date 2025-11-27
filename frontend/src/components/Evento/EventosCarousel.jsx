@@ -35,6 +35,25 @@ export default function EventosCarousel({ onChange }) {
     });
   };
 
+  useEffect(() => {
+    const tipo = localStorage.getItem("noti_tipo");
+    const id = localStorage.getItem("noti_id");
+
+    if (tipo === "evento" && id) {
+      const eventoEncontrado = eventos.find(ev => ev.id == id);
+
+      if (eventoEncontrado) {
+        setEventoSeleccionado(eventoEncontrado);
+        setModalAbierto(true);
+      }
+    }
+
+    localStorage.removeItem("noti_tipo");
+    localStorage.removeItem("noti_id");
+
+  }, [eventos]);
+
+
   // Cargar eventos solo una vez
   useEffect(() => {
     const fetchEventos = async () => {
@@ -244,7 +263,7 @@ export default function EventosCarousel({ onChange }) {
 
               {/* Encabezado tipo “Cumpleaños” */}
               <div className="flex items-center justify-between px-6 py-4 border-b bg-[#f8faf8]">
-                
+
                 <span className="text-sm text-gray-500 italic">
                   {new Date(evento.fecha).toLocaleDateString("es-CO", {
                     year: "numeric",

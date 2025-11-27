@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Beneficio;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\NotificacionHelper;
 
 class BeneficiosController extends Controller
 {
@@ -53,6 +54,16 @@ class BeneficiosController extends Controller
             'vigencia_hasta' => $request->vigencia_hasta,
             'estado' => $request->estado ?? 'activo'
         ]);
+
+        NotificacionHelper::enviar(
+            'Nuevo beneficio disponible',
+            $beneficio->titulo,
+            'beneficio',
+            $beneficio->id
+        );
+
+
+
 
         // agregar imagen_url
         $beneficio->imagen_url = $ruta ? asset("storage/$ruta") : null;

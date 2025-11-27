@@ -1,5 +1,6 @@
 import { X, Gift, Award, Building2, CalendarDays } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const resolveFoto = (foto) => {
     if (!foto) return null;
@@ -31,7 +32,6 @@ export default function CumpleaniosModal({ data, onClose }) {
                 transition={{ duration: 0.25 }}
                 className="bg-white rounded-3xl shadow-2xl w-[95%] max-w-4xl relative overflow-hidden"
             >
-
                 {/* ENCABEZADO VERDE */}
                 <div className="bg-gradient-to-r from-[#397C3C] to-[#5bad5c] py-6 px-8 flex items-center justify-center relative">
                     <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -39,7 +39,6 @@ export default function CumpleaniosModal({ data, onClose }) {
                         Cumpleaños y Aniversarios
                     </h2>
 
-                    {/* Botón cerrar */}
                     <button
                         onClick={onClose}
                         className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white w-10 h-10 rounded-full flex items-center justify-center transition border border-white/40"
@@ -62,8 +61,6 @@ export default function CumpleaniosModal({ data, onClose }) {
                             <ul className="divide-y divide-gray-200">
                                 {cumpleanios.map((c) => (
                                     <li key={c.id} className="py-4 flex items-center gap-4">
-
-                                        {/* FOTO MINI CARNET */}
                                         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#397C3C] bg-gray-100 flex items-center justify-center shadow">
                                             {c.foto_perfil ? (
                                                 <img
@@ -75,13 +72,11 @@ export default function CumpleaniosModal({ data, onClose }) {
                                             )}
                                         </div>
 
-                                        {/* INFO */}
                                         <div className="flex-1">
                                             <p className="font-semibold text-gray-900 text-[15px]">{c.nombre}</p>
                                             <p className="text-xs text-gray-500">{c.fecha_legible}</p>
                                         </div>
 
-                                        {/* DÍAS */}
                                         <span className="text-xs font-semibold text-[#397C3C]">
                                             {formatDias(c.dias_faltantes)}
                                         </span>

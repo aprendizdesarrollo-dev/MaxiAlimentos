@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\CumpleaniosController;
 use App\Http\Controllers\Api\EstadisticasController;
 use App\Http\Controllers\Api\BeneficiosController;
 use App\Http\Controllers\Api\ConfiguracionController;
+use App\Http\Controllers\Api\NotificacionController;
 
 // RUTAS DE LOGUEO
 
@@ -36,10 +37,17 @@ Route::post('/perfil/foto', [AuthController::class, 'updateFotoPerfil']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
 Route::post('/password/reset', [ResetPasswordController::class, 'reset']);
 
+
+
 //RUTA DE VERIFICACION DE CORREO
 
 Route::post('/register-temp', [VerificationController::class, 'sendCode']);
 Route::post('/verify-temp', [VerificationController::class, 'verifyCode']);
+Route::middleware('auth:api')->put('/cambiar-contrasena-directo', [
+    AuthController::class,
+    'cambiarContrasenaDirecto'
+]);
+
 
 //RUTA DE SEEDERS
 
@@ -115,3 +123,14 @@ Route::middleware('auth:api')->group(function () {
 
 Route::get('/configuracion', [ConfiguracionController::class, 'index']);
 Route::put('/configuracion', [ConfiguracionController::class, 'update']);
+
+// RUTAS DE NOTIFICACIONES
+
+Route::get('/notificaciones', [NotificacionController::class, 'index']);
+Route::put('/notificaciones/marcar-leidas', [NotificacionController::class, 'marcarLeidas']);
+Route::delete('/notificaciones/{id}', [NotificacionController::class, 'destroy']);
+Route::delete('/notificaciones', [NotificacionController::class, 'destroyAll']);
+Route::get('/notificaciones/cumpleanios/generar', [NotificacionController::class, 'generarCumpleanios']);
+
+
+

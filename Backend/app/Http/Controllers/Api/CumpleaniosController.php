@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Helpers\NotificacionHelper;
 
 class CumpleaniosController extends Controller
 {
@@ -31,7 +32,7 @@ class CumpleaniosController extends Controller
                 return [
                     'id'             => $user->id,
                     'nombre'         => $user->nombre,
-                    'foto_perfil'    => $user->foto_perfil, // ⭐ AGREGADO
+                    'foto_perfil'    => $user->foto_perfil, 
                     'fecha'          => $proximo->toDateString(),
                     'fecha_legible'  => $proximo->translatedFormat('d \\de F'),
                     'dias_faltantes' => $hoy->diffInDays($proximo),

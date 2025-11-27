@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Configuracion;
+use Illuminate\Support\Facades\Validator;
 
 class ConfiguracionController extends Controller
 {
@@ -43,19 +44,30 @@ class ConfiguracionController extends Controller
             ], 404);
         }
 
-        // Actualizar SOLO los campos existentes para evitar errores
-        $config->update([
-            'modo_mantenimiento'   => $request->modo_mantenimiento ?? $config->modo_mantenimiento,
-            'tema'                 => $request->tema ?? $config->tema,
-            'mensaje_bienvenida'   => $request->mensaje_bienvenida ?? $config->mensaje_bienvenida,
-            'color_primario'       => $request->color_primario ?? $config->color_primario,
-            'color_secundario'     => $request->color_secundario ?? $config->color_secundario,
-            'footer_texto'         => $request->footer_texto ?? $config->footer_texto,
-            'notificaciones_sonido'=> $request->notificaciones_sonido ?? $config->notificaciones_sonido,
-            'notificaciones_popup' => $request->notificaciones_popup ?? $config->notificaciones_popup,
-            'politica_privacidad'  => $request->politica_privacidad ?? $config->politica_privacidad,
-            'terminos'             => $request->terminos ?? $config->terminos,
+        // VALIDACIÓN PREMIUM
+        $validator = Validator::make($request->all(), [
+            'modo_mantenimiento'   => 'nullable|in:on,off',
+            'tema'                 => 'nullable|in:claro,oscuro',
+            'mensaje_bienvenida'   => 'nullable|string|max:255',
+            'color_primario'       => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'color_secundario'     => 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/',
+            'footer_texto'         => 'nullable|string|max:255',
+            'notificaciones_sonido'=> 'nullable|boolean',
+            'notificaciones_popup' => 'nullable|boolean',
+            'politica_privacidad'  => 'nullable|string',
+            'terminos'             => 'nullable|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Actualizar solo campos enviados
+        $config->fill($validator->validated());
+        $config->save();
 
         return response()->json([
             'success' => true,
