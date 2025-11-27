@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Phone,
   Mail,
@@ -6,10 +7,29 @@ import {
   UserRound,
   Briefcase,
   Building2,
-  Hash,
 } from "lucide-react";
 
 const PerfilSidebar = ({ user }) => {
+  const [horaLocal, setHoraLocal] = useState("");
+
+  useEffect(() => {
+    const actualizarHora = () => {
+      const ahora = new Date();
+      const hora = ahora.toLocaleTimeString("es-CO", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      setHoraLocal(hora.replace(".", "")); // quita el punto del AM/PM
+    };
+
+    actualizarHora();
+    const intervalo = setInterval(actualizarHora, 60000);
+
+    return () => clearInterval(intervalo);
+  }, []);
+
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
       {/* Título */}
@@ -31,7 +51,7 @@ const PerfilSidebar = ({ user }) => {
 
         <div className="flex items-center gap-2">
           <Clock size={16} className="text-[#397C3C]" />
-          <span>12:37 PM hora local</span> {/* Más adelante será dinámico */}
+          <span>{horaLocal}  Bogotá D.C</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -64,9 +84,7 @@ const PerfilSidebar = ({ user }) => {
 
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#397C3C]/10 flex items-center justify-center font-bold text-[#397C3C]">
-              {user.jefe_directo
-                ? user.jefe_directo[0].toUpperCase()
-                : "?"}
+              {user.jefe_directo ? user.jefe_directo[0].toUpperCase() : "?"}
             </div>
 
             <div>

@@ -36,20 +36,45 @@ const PerfilInfoBasica = ({ user, isEditing, setIsEditing, setUser }) => {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
+
       const res = await api.put("/perfil", form, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.data.success) {
         toast.success("Cambios guardados correctamente");
-        setUser((prev) => ({ ...prev, ...form })); // ✅ Actualiza el usuario global
-        setIsEditing(false); // 🔒 Sale del modo edición
+
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+
+        setUser((prev) => ({ ...prev, ...form }));
+        setIsEditing(false);
       }
+
     } catch (err) {
       console.error("Error actualizando perfil:", err);
-      toast.error("Error al guardar los cambios");
+
+      if (err.response?.data?.errors) {
+        const errors = err.response.data.errors;
+
+        // mostrar el primer error automáticamente
+        const firstKey = Object.keys(errors)[0];
+        toast.error(errors[firstKey][0]);
+        return;
+      }
+
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+        return;
+      }
+
+      toast.error("Error desconocido");
     }
   };
+
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">

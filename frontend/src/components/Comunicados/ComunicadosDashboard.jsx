@@ -23,6 +23,24 @@ export default function ComunicadosDashboard() {
   const [comunicadoActivo, setComunicadoActivo] = useState(null);
   const [nuevo, setNuevo] = useState({ titulo: "", descripcion: "" });
 
+  useEffect(() => {
+    const tipo = localStorage.getItem("noti_tipo");
+    const id = localStorage.getItem("noti_id");
+
+    if (tipo === "comunicado" && id) {
+        const encontrado = comunicados.find(c => c.id == id);
+        if (encontrado) {
+            setComunicadoSeleccionado(encontrado);
+            setModalAbierto(true);
+        }
+    }
+
+    localStorage.removeItem("noti_tipo");
+    localStorage.removeItem("noti_id");
+
+}, [comunicados]);
+
+
   // === Cargar comunicados ===
   useEffect(() => {
     const fetchData = async () => {

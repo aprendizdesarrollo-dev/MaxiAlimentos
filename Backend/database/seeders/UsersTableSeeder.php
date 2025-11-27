@@ -11,7 +11,7 @@ class UsersTableSeeder extends Seeder
     public function run(): void
     {
         // 🔹 Limpia la tabla antes de insertar (solo si no tienes relaciones)
-        DB::table('users')->truncate(); 
+        DB::table('users')->delete(); 
 
         DB::table('users')->insert([
             [

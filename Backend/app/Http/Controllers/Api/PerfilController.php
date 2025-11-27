@@ -38,37 +38,78 @@ class PerfilController extends Controller
     }
 
 
-    /**
-     * ✏️ Actualizar datos del perfil
-     */
+    /*Actualizar datos del perfil */
     public function update(Request $request)
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
 
-            $validator = Validator::make($request->all(), [
-                'nombre' => 'required|string|max:255',
-                'apellido' => 'required|string|max:255',
-                'telefono_personal' => 'nullable|string|max:30',
-                'correo_personal' => 'nullable|email|max:255',
-                'direccion' => 'nullable|string|max:255',
-                'ciudad' => 'nullable|string|max:100',
-                'departamento' => 'nullable|string|max:100',
-                'pais' => 'nullable|string|max:100',
-                'cargo' => 'nullable|string|max:150',
-                'area' => 'nullable|string|max:150',
-            ]);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nombre' => 'required|string|max:255',
+                    'segundo_nombre' => 'nullable|string|max:255',
+                    'apellido' => 'required|string|max:255',
+
+                    'genero' => 'nullable|string|max:50',
+                    'fecha_nacimiento' => 'nullable|date',
+                    'estado_civil' => 'nullable|string|max:100',
+
+                    'cedula' => 'nullable|string|max:30|unique:users,cedula,' . $user->id,
+                    'telefono_personal' => 'nullable|string|max:30',
+                    'correo_personal' => 'nullable|email|max:255',
+                    'correo_corporativo' => 'nullable|email|max:255',
+
+                    'direccion' => 'nullable|string|max:255',
+                    'ciudad' => 'nullable|string|max:100',
+                    'departamento' => 'nullable|string|max:100',
+                    'pais' => 'nullable|string|max:100',
+
+                    'cargo' => 'nullable|string|max:150',
+                    'area' => 'nullable|string|max:150',
+                    'jefe_directo' => 'nullable|string|max:255'
+                ],
+
+                [
+                    'nombre.required' => 'El nombre es obligatorio.',
+                    'apellido.required' => 'El apellido es obligatorio.',
+
+                    'cedula.unique' => 'La cédula ingresada ya está registrada en el sistema.',
+                    'cedula.max' => 'La cédula no puede superar los 30 caracteres.',
+
+                    'correo_personal.email' => 'El correo personal no tiene un formato válido.',
+                    'correo_corporativo.email' => 'El correo corporativo no tiene un formato válido.',
+
+                    'fecha_nacimiento.date' => 'Debe ingresar una fecha de nacimiento válida.',
+
+                    'genero.string' => 'El género ingresado es inválido.',
+                    'estado_civil.string' => 'El estado civil ingresado es inválido.',
+
+                    'telefono_personal.max' => 'El teléfono personal no puede superar los 30 caracteres.',
+
+                    'cargo.string' => 'El cargo ingresado no es válido.',
+                    'area.string' => 'El área ingresada no es válida.',
+                    'jefe_directo.string' => 'El nombre del jefe directo no es válido.',
+                ]
+            );
 
             if ($validator->fails()) {
-                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
             }
 
             $user->update($validator->validated());
 
+            // REFRESCAR TOKEN PARA QUE NO SE PIERDA LA SESIÓN
+            $token = JWTAuth::refresh(JWTAuth::getToken());
+
             return response()->json([
                 'success' => true,
                 'message' => 'Perfil actualizado correctamente.',
-                'data' => $user
+                'data' => $user,
+                'token' => $token
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -78,6 +119,8 @@ class PerfilController extends Controller
             ], 500);
         }
     }
+
+
 
     /**
      * 🖼️ Actualizar foto de perfil
