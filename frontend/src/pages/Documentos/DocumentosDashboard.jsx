@@ -1,341 +1,243 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
-    FileText,
     BriefcaseBusiness,
-    Building2,
+    Building,
     HeartHandshake,
-    Globe2,
+    Landmark,
     ShieldCheck,
-    Download,
-    X
+    Search
 } from "lucide-react";
 
-const CATEGORIAS = [
-    {
-        id: "laborales",
-        titulo: "Documentos laborales individuales",
-        descripcion: "Accede a tus desprendibles, certificados y resumen de vacaciones.",
-        icono: BriefcaseBusiness,
-        documentos: [
-            {
-                nombre: "Desprendible de nómina",
-                archivo: "/documentos/laborales/desprendible_nomina.pdf"
-            },
-            {
-                nombre: "Certificado laboral",
-                archivo: "/documentos/laborales/certificado_laboral.pdf"
-            },
-            {
-                nombre: "Certificado de aportes (EPS, Pensión, ARL)",
-                archivo: "/documentos/laborales/certificado_aportes.pdf"
-            },
-            {
-                nombre: "Historial y resumen de vacaciones",
-                archivo: "/documentos/laborales/resumen_vacaciones.pdf"
-            }
-        ]
-    },
-    {
-        id: "corporativos",
-        titulo: "Documentos corporativos internos",
-        descripcion: "Consulta políticas, reglamentos y manuales oficiales de la empresa.",
-        icono: Building2,
-        documentos: [
-            {
-                nombre: "Política de Tratamiento de Datos Personales",
-                archivo: "/documentos/corporativos/tratamiento_datos.pdf"
-            },
-            {
-                nombre: "Código de Ética y Conducta",
-                archivo: "/documentos/corporativos/codigo_etica_conducta.pdf"
-            },
-            {
-                nombre: "Reglamento Interno de Trabajo (RIT)",
-                archivo: "/documentos/corporativos/reglamento_interno_trabajo.pdf"
-            },
-            {
-                nombre: "Manual de Higiene y Seguridad Industrial – SST",
-                archivo: "/documentos/corporativos/manual_higiene_seguridad.pdf"
-            },
-            {
-                nombre: "Normas de Bioseguridad y Manipulación de Alimentos",
-                archivo: "/documentos/corporativos/normas_bioseguridad_alimentos.pdf"
-            },
-            {
-                nombre: "Política de Seguridad de la Información",
-                archivo: "/documentos/corporativos/politica_seguridad_informacion.pdf"
-            },
-            {
-                nombre: "Manual de Identidad Corporativa",
-                archivo: "/documentos/corporativos/manual_identidad_corporativa.pdf"
-            }
-        ]
-    },
-    {
-        id: "bienestar",
-        titulo: "Bienestar y Recursos Humanos",
-        descripcion: "Formatos y guías relacionadas con bienestar y gestión humana.",
-        icono: HeartHandshake,
-        documentos: [
-            {
-                nombre: "Formato de solicitud de permisos",
-                archivo: "/documentos/bienestar/formato_permisos.pdf"
-            },
-            {
-                nombre: "Formato de incapacidades",
-                archivo: "/documentos/bienestar/formato_incapacidades.pdf"
-            },
-            {
-                nombre: "Guía de beneficios corporativos",
-                archivo: "/documentos/bienestar/guia_beneficios_corporativos.pdf"
-            }
-        ]
-    },
-    {
-        id: "generales",
-        titulo: "Documentos generales de la empresa",
-        descripcion: "Información institucional clave de MaxiAlimentos.",
-        icono: Globe2,
-        documentos: [
-            {
-                nombre: "Misión y visión institucional",
-                archivo: "/documentos/generales/mision_vision_maxialimentos.pdf"
-            }
-        ]
-    },
-    {
-        id: "legales",
-        titulo: "Documentos legales y normativos",
-        descripcion: "Documentos legales y certificaciones externas.",
-        icono: ShieldCheck,
-        documentos: [
-            {
-                nombre: "Política de cookies",
-                archivo: "/documentos/legales/politica_cookies.pdf"
-            },
-            {
-                nombre: "Certificado de sanidad / INVIMA",
-                archivo: "/documentos/legales/certificado_sanidad_invima.pdf"
-            }
-        ]
-    }
-];
+import DocumentosModal from "../../components/Documentos/DocumentosModal";
 
 export default function DocumentosDashboard() {
-    const [categoriaActiva, setCategoriaActiva] = useState(null);
 
-    const abrirCategoria = (categoria) => {
-        setCategoriaActiva(categoria);
-    };
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+    const [busqueda, setBusqueda] = useState("");
 
-    const cerrarModal = () => {
-        setCategoriaActiva(null);
-    };
+    // BASE DE DATOS DE DOCUMENTOS
+    const categorias = [
+        {
+            id: "laborales",
+            icon: BriefcaseBusiness,
+            titulo: "Documentos laborales individuales",
+            descripcion: "Desprendibles, certificados y vacaciones.",
+            documentos: [
+                {
+                    nombre: "Desprendible de nómina",
+                    etiqueta: "Nuevo",
+                    actualizado: "2025-10-03",
+                    tamano: "820 KB",
+                    obligatorio: true,
+                    url: "/docs/desprendible.pdf"
+                },
+                {
+                    nombre: "Certificado laboral",
+                    actualizado: "2025-09-15",
+                    tamano: "540 KB",
+                    obligatorio: true,
+                    url: "/docs/certificado_laboral.pdf"
+                },
+                {
+                    nombre: "Certificado de aportes",
+                    actualizado: "2025-08-02",
+                    tamano: "430 KB",
+                    url: "/docs/aportes.pdf"
+                },
+                {
+                    nombre: "Historial de vacaciones",
+                    actualizado: "2025-11-10",
+                    tamano: "1.2 MB",
+                    url: "/docs/vacaciones.pdf"
+                },
+            ]
+        },
+
+        {
+            id: "corporativos",
+            icon: Building,
+            titulo: "Documentos corporativos",
+            descripcion: "Manual, políticas y reglamentos.",
+            documentos: [
+                { nombre: "Código de ética", tamano: "1.1 MB", obligatorio: true, url: "/docs/etica.pdf" },
+                { nombre: "Reglamento interno", tamano: "860 KB", url: "/docs/reglamento.pdf" },
+                { nombre: "Política de datos", tamano: "600 KB", obligatorio: true, url: "/docs/tratamiento.pdf" },
+                { nombre: "Manual corporativo", tamano: "2.3 MB", url: "/docs/manual.pdf" },
+            ]
+        },
+
+        {
+            id: "bienestar",
+            icon: HeartHandshake,
+            titulo: "Bienestar y RRHH",
+            descripcion: "Formatos y guías para colaboradores.",
+            documentos: [
+                { nombre: "Formato de permisos", tamano: "220 KB", url: "/docs/permisos.pdf" },
+                { nombre: "Incapacidades", tamano: "300 KB", url: "/docs/incapacidad.pdf" },
+                { nombre: "Guía de beneficios", tamano: "1.4 MB", url: "/docs/beneficios.pdf" },
+            ]
+        },
+
+        {
+            id: "generales",
+            icon: Landmark,
+            titulo: "Documentos generales",
+            descripcion: "Información institucional.",
+            documentos: [
+                { nombre: "Misión y visión", tamano: "350 KB", url: "/docs/mision_vision.pdf" },
+            ]
+        },
+
+        {
+            id: "legales",
+            icon: ShieldCheck,
+            titulo: "Documentos legales",
+            descripcion: "Documentos obligatorios externos.",
+            documentos: [
+                { nombre: "Política de cookies", tamano: "180 KB", url: "/docs/cookies.pdf" },
+                { nombre: "Certificado de sanidad", tamano: "980 KB", obligatorio: true, url: "/docs/sanidad.pdf" },
+            ]
+        },
+    ];
+
+    // BUSCADOR GLOBAL
+    const resultadosBusqueda = useMemo(() => {
+        if (busqueda.trim() === "") return [];
+
+        const q = busqueda.toLowerCase();
+
+        return categorias
+            .flatMap(cat =>
+                cat.documentos.map(doc => ({
+                    ...doc,
+                    categoria: cat.titulo
+                }))
+            )
+            .filter(doc => doc.nombre.toLowerCase().includes(q));
+    }, [busqueda]);
 
     return (
-        <div className="p-8 space-y-8">
+        <div className="p-10">
 
             {/* HEADER PREMIUM */}
-            <div className="
-                w-full 
-                rounded-3xl 
-                p-10 
-                shadow-xl 
-                bg-gradient-to-r 
-                from-[#2f6b32] 
-                to-[#5bad5c] 
-                text-white
-                relative
-                overflow-hidden
-            ">
-                {/* Ícono gigante difuminado */}
-                <FileText
+            <div className="p-10 rounded-3xl bg-gradient-to-r from-[#2f6b32] to-[#5bad5c] shadow-lg relative mb-10">
+                <h1 className="text-3xl font-extrabold text-white">
+                    Documentos de la empresa
+                </h1>
+                <p className="text-white/80 mt-1">
+                    Consulta y descarga documentos laborales, corporativos, de bienestar y legales.
+                </p>
+
+                {/* Icono gigante estilo todos los headers */}
+                <div
                     className="
-                        absolute 
-                        right-6 
-                        top-1/2 
-                        -translate-y-1/2 
-                        text-white/20
-                    "
-                    size={180}
-                    strokeWidth={1.3}
-                />
-
-                <div className="relative z-10 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
-                            Documentos de la empresa
-                        </h1>
-                        <p className="text-white/90 text-sm mt-2 max-w-xl">
-                            Consulta y descarga tus documentos laborales, corporativos, 
-                            de bienestar y legales desde un solo lugar.
-                        </p>
-                    </div>
-
-                    <div className="text-right text-sm opacity-90">
-                        {new Date().toLocaleDateString("es-CO", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric"
-                        })}
-                    </div>
+                            absolute 
+                            right-10 
+                            top-1/2 
+                            -translate-y-1/2 
+                            opacity-20 
+                            text-white
+                            pointer-events-none
+                            select-none
+                        "
+                                    >
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        className="w-32 h-32"
+                    >
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="12" y1="12" x2="18" y2="12" />
+                        <line x1="12" y1="16" x2="18" y2="16" />
+                        <line x1="6" y1="12" x2="8" y2="12" />
+                        <line x1="6" y1="16" x2="8" y2="16" />
+                    </svg>
                 </div>
+
+
+
             </div>
+
+            {/* BUSCADOR */}
+            <div className="relative mb-10 max-w-3xl">
+                <Search className="absolute left-4 top-3 text-gray-500" />
+                <input
+                    type="text"
+                    placeholder="Buscar documentos en todo el sistema..."
+                    className="w-full pl-12 pr-4 py-3 border rounded-2xl shadow-sm focus:ring-2 focus:ring-[#397C3C]/40"
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.target.value)}
+                />
+            </div>
+
+            {/* RESULTADOS DEL BUSCADOR */}
+            {busqueda && resultadosBusqueda.length > 0 && (
+                <div className="mb-10 bg-white rounded-2xl p-6 shadow border">
+                    <h3 className="font-bold mb-3 text-[#397C3C]">Resultados de búsqueda</h3>
+
+                    <ul className="space-y-3">
+
+                        {resultadosBusqueda.map((doc, idx) => (
+                            <li key={idx} className="flex justify-between items-center border p-3 rounded-xl bg-gray-50">
+                                <div>
+                                    <p className="font-semibold">{doc.nombre}</p>
+                                    <p className="text-xs text-gray-500">{doc.categoria} — {doc.tamano}</p>
+                                </div>
+                                <button
+                                    onClick={() => setCategoriaSeleccionada({ documentos: [doc], titulo: doc.categoria })}
+                                    className="text-white bg-[#397C3C] px-4 py-2 rounded-lg"
+                                >
+                                    Ver
+                                </button>
+                            </li>
+                        ))}
+
+                    </ul>
+                </div>
+            )}
+
 
             {/* GRID DE CATEGORÍAS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {CATEGORIAS.map((cat) => {
-                    const Icono = cat.icono;
-                    return (
-                        <div
-                            key={cat.id}
-                            className="
-                                bg-white 
-                                rounded-3xl 
-                                p-6 
-                                shadow-md 
-                                border border-gray-200 
-                                flex 
-                                flex-col 
-                                justify-between
-                            "
-                        >
-                            <div className="flex items-start gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-2xl bg-[#397C3C]/10 flex items-center justify-center">
-                                    <Icono size={24} className="text-[#397C3C]" />
-                                </div>
-                                <div>
-                                    <h2 className="font-extrabold text-lg text-[#397C3C]">
-                                        {cat.titulo}
-                                    </h2>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        {cat.descripcion}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center justify-between mt-2">
-                                <p className="text-xs text-gray-500">
-                                    {cat.documentos.length} documento(s) disponible(s)
-                                </p>
-                                <button
-                                    onClick={() => abrirCategoria(cat)}
-                                    className="
-                                        bg-[#397C3C] 
-                                        hover:bg-[#2f612f] 
-                                        transition 
-                                        text-white 
-                                        px-4 
-                                        py-2 
-                                        rounded-xl 
-                                        text-sm 
-                                        font-semibold
-                                        shadow-sm
-                                    "
-                                >
-                                    Ver documentos
-                                </button>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* MODAL DE DOCUMENTOS POR CATEGORÍA */}
-            {categoriaActiva && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
-                    <div className="bg-white w-[95%] max-w-3xl rounded-3xl shadow-2xl p-6 md:p-8 relative">
-
-                        {/* Botón cerrar */}
-                        <button
-                            onClick={cerrarModal}
-                            className="
-                                absolute 
-                                top-4 
-                                right-4 
-                                w-8 
-                                h-8 
-                                rounded-full 
-                                bg-[#397C3C] 
-                                text-white 
-                                flex 
-                                items-center 
-                                justify-center 
-                                hover:bg-[#2f612f] 
-                                transition
-                            "
-                        >
-                            <X size={18} />
-                        </button>
-
-                        {/* Encabezado del modal */}
-                        <div className="flex items-start gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-2xl bg-[#397C3C]/10 flex items-center justify-center">
-                                <FileText size={22} className="text-[#397C3C]" />
-                            </div>
+                {categorias.map((cat) => (
+                    <div
+                        key={cat.id}
+                        className="bg-white p-6 rounded-3xl border shadow hover:shadow-lg transition cursor-pointer"
+                    >
+                        <div className="flex items-center gap-4">
+                            <cat.icon className="w-12 h-12 text-[#397C3C]" />
                             <div>
-                                <h2 className="text-xl font-extrabold text-[#397C3C]">
-                                    {categoriaActiva.titulo}
-                                </h2>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Selecciona el documento que deseas consultar o descargar.
-                                </p>
+                                <h2 className="font-bold text-lg text-[#397C3C]">{cat.titulo}</h2>
+                                <p className="text-gray-600 text-sm">{cat.descripcion}</p>
                             </div>
                         </div>
 
-                        {/* Lista de documentos */}
-                        <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
-                            {categoriaActiva.documentos.map((doc) => (
-                                <div
-                                    key={doc.nombre}
-                                    className="
-                                        flex 
-                                        items-center 
-                                        justify-between 
-                                        p-4 
-                                        border 
-                                        rounded-2xl 
-                                        bg-gray-50
-                                    "
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-gray-200">
-                                            <FileText size={18} className="text-[#397C3C]" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-800 text-sm">
-                                                {doc.nombre}
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                Formato PDF
-                                            </p>
-                                        </div>
-                                    </div>
+                        <div className="flex justify-between items-center mt-5">
+                            <span className="text-xs text-gray-500">
+                                {cat.documentos.length} documento(s)
+                            </span>
 
-                                    {/* Botón de descarga (por ahora solo visual) */}
-                                    <a
-                                        href={doc.archivo}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="
-                                            inline-flex 
-                                            items-center 
-                                            gap-1 
-                                            text-sm 
-                                            font-semibold 
-                                            text-[#397C3C] 
-                                            hover:underline
-                                        "
-                                    >
-                                        <Download size={16} />
-                                        Descargar
-                                    </a>
-                                </div>
-                            ))}
+                            <button
+                                onClick={() => setCategoriaSeleccionada(cat)}
+                                className="bg-[#397C3C] text-white text-sm px-4 py-2 rounded-xl hover:bg-[#2f612f] transition"
+                            >
+                                Ver documentos
+                            </button>
                         </div>
                     </div>
-                </div>
+                ))}
+            </div>
+
+            {/* MODAL */}
+            {categoriaSeleccionada && (
+                <DocumentosModal
+                    categoria={categoriaSeleccionada}
+                    onClose={() => setCategoriaSeleccionada(null)}
+                />
             )}
         </div>
     );
