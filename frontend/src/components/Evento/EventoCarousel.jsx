@@ -63,12 +63,16 @@ export default function EventoCarousel({ onChange }) {
 
   const cerrarEditar = () => {
     setModoEdicion(false);
-    setEventoEditando(null);
+    setEventoSeleccionado(null);
+    document.body.style.overflow = "auto";
   };
 
   const confirmar = (id) => setConfirmarEliminar(id);
-  const cerrarConfirmar = () => setConfirmarEliminar(null);
-
+  const cerrarConfirmar = () => {
+    setConfirmarEliminar(null);
+    setEventoSeleccionado(null);
+    document.body.style.overflow = "auto";
+  };
   // Mensajes de carga y error
   if (cargando) {
     return (

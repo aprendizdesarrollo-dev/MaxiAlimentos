@@ -317,13 +317,6 @@ export default function BeneficiosModal({
                     className="fixed inset-0 bg-black/40 flex justify-center items-center z-[1100]"
                 >
                     <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl relative">
-
-                        {cargando && (
-                            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex justify-center items-center z-[2000]">
-                                <div className="animate-spin border-4 border-[#397C3C] border-t-transparent w-10 h-10 rounded-full"></div>
-                            </div>
-                        )}
-
                         <h3 className="text-xl font-bold text-red-600 mb-3">
                             Eliminar beneficio
                         </h3>
@@ -352,10 +345,16 @@ export default function BeneficiosModal({
                                     }
                                     setCargando(false);
                                 }}
-                                className="px-6 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                                disabled={cargando}
+                                className={`
+                                        px-6 py-2 rounded-lg text-white font-medium transition
+                                        bg-red-600 hover:bg-red-700 shadow-sm
+                                        ${cargando ? "opacity-70 cursor-not-allowed" : ""}
+                                    `}
                             >
-                                Eliminar
+                                {cargando ? "Eliminando..." : "Eliminar"}
                             </button>
+
                         </div>
                     </div>
                 </motion.div>

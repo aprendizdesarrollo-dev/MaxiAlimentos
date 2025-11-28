@@ -1,19 +1,35 @@
+import { useState } from "react";
 import api from "../../services/api";
 
 export default function EventoEliminarModal({ id, cerrar, refrescar }) {
-  const eliminar = async () => {
+
+  const [cargando, setCargando] = useState(false);
+
+  const handleEliminar = async () => {
     try {
+      setCargando(true);
+
       const token = localStorage.getItem("token");
 
       await api.delete(`/eventos/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // 1. Refrescar la lista
       await refrescar();
+
+      // 2. Cerrar modal
       cerrar();
+
+      // 3. Evitar que se abra el modal de evento eliminado
+      localStorage.removeItem("noti_tipo");
+      localStorage.removeItem("noti_id");
+
     } catch (error) {
       console.error("Error eliminando evento:", error);
       alert("No se pudo eliminar el evento.");
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -38,10 +54,13 @@ export default function EventoEliminarModal({ id, cerrar, refrescar }) {
           </button>
 
           <button
-            onClick={eliminar}
-            className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
+            onClick={handleEliminar}
+            disabled={cargando}
+            className={`bg-red-600 text-white px-6 py-2 rounded-lg 
+                        hover:bg-red-700 transition 
+                        ${cargando ? "opacity-70 cursor-not-allowed" : ""}`}
           >
-            Eliminar
+            {cargando ? "Eliminando..." : "Eliminar"}
           </button>
         </div>
 

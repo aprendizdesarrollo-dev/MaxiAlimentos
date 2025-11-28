@@ -23,7 +23,7 @@ import CompletarPerfil from "./pages/Perfil/CompletarPerfil";
 // EVENTOS
 import CrearEvento from "./pages/Evento/CrearEvento";
 
-import ComunicadosDashboard from "./components/Comunicados/ComunicadosDashboard";
+import ComunicadosDashboard from "./pages/Comunicados/ComunicadosDashboard";
 import BeneficiosModal from "./components/Beneficios/BeneficiosModal";
 
 

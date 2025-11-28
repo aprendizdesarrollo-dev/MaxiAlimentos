@@ -4,7 +4,7 @@ import axios from "axios";
 import Sidebar from "./layout/Sidebar";
 import InicioSection from "./sections/InicioSection";
 
-import ComunicadosDashboard from "../../components/Comunicados/ComunicadosDashboard";
+import ComunicadosDashboard from "../Comunicados/ComunicadosDashboard";
 import DirectorioDashboard from "../Directorio/DirectorioDashboard";
 import Perfil from "../Perfil/PerfilDashboard";
 import ConfiguracionSistema from "../Configuracion/ConfiguracionSistema";
