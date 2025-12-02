@@ -13,6 +13,7 @@ import {
     LayoutDashboard,
     UserCheck,
     CalendarDays,
+    MessageSquare,
 } from "lucide-react";
 
 // Sidebar del Admin, reutilizable
@@ -24,6 +25,7 @@ export default function Sidebar({ active, setActive, isOpen, setIsOpen, onLogout
         { id: "documentos", label: "Documentos", icon: <FolderOpen size={20} /> },
         { id: "config", label: "Configuración", icon: <Settings size={20} /> },
         { id: "perfil", label: "Perfil", icon: <UserCircle size={20} /> },
+        { id: "mensajes", label: "Mensajes", icon: <MessageSquare size={20} /> },
     ];
 
     return (

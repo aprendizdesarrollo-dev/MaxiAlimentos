@@ -19,6 +19,9 @@ import { useBeneficios } from "./hooks/useBeneficios";
 import { useComunicados } from "./hooks/useComunicados";
 import { useCumpleanios } from "./hooks/useCumpleanios";
 
+import MensajesDashboard from "../Mensajes/MensajesDashboard";
+
+
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
@@ -105,6 +108,8 @@ export default function AdminDashboard() {
                 return <ConfiguracionSistema />;
             case "documentos":
                 return <DocumentosDashboard />;
+            case "mensajes":
+                return <MensajesDashboard />;
             default:
                 return null;
         }

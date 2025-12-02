@@ -17,11 +17,11 @@ export const useUser = () => {
                     return;
                 }
 
-                const res = await api.get("/perfil", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const res = await api.get("/me");
 
-                setUser(res.data.data);
+                // backend devuelve { user: {...} }
+                setUser(res.data.user);
+                
             } catch (error) {
                 console.error("Error al obtener usuario:", error);
                 localStorage.removeItem("token");
@@ -34,13 +34,10 @@ export const useUser = () => {
         loadUser();
     }, [navigate]);
 
-    // -------------------------
-    // LOGOUT AÑADIDO AQUÍ
-    // -------------------------
     const handleLogout = async () => {
         try {
             await api.post("/logout");
-        } catch (e) {}
+        } catch {}
         localStorage.removeItem("token");
         navigate("/login");
     };

@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\BeneficiosController;
 use App\Http\Controllers\Api\ConfiguracionController;
 use App\Http\Controllers\Api\NotificacionController;
 use App\Http\Controllers\Api\MessagesController;
+use Illuminate\Http\Request;
 
 
 // RUTAS DE LOGUEO
@@ -137,19 +138,14 @@ Route::get('/notificaciones/cumpleanios/generar', [NotificacionController::class
 // RUTAS DE MENSAJES
 
 Route::middleware(['auth:api'])->prefix('mensajes')->group(function () {
-    // Lista de conversaciones del usuario autenticado
     Route::get('conversaciones', [MessagesController::class, 'index']);
-
-    // Historial de chat con un usuario específico (se usa en el módulo y desde el directorio)
     Route::get('chat/{otherUserId}', [MessagesController::class, 'chat']);
-
-    // Enviar un mensaje
     Route::post('enviar', [MessagesController::class, 'store']);
-
-    // Marcar como leídos los mensajes de una conversación
     Route::post('chat/{otherUserId}/marcar-leido', [MessagesController::class, 'markAsRead']);
-
-    // Total de mensajes no leídos (para la campana de notificaciones)
     Route::get('no-leidos/total', [MessagesController::class, 'unreadCount']);
 });
 
+
+Route::get('/usuarios', function () {
+    return App\Models\User::select('id', 'nombre', 'correo', 'cargo', 'foto_perfil')->get();
+});

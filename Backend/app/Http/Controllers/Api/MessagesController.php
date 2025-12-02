@@ -121,7 +121,7 @@ class MessagesController extends Controller
             'mensaje' => 'required|string|max:5000',
         ]);
 
-        // Evitar mensajes a uno mismo
+        // Evitar auto-mensajes
         if ((int) $data['destinatario_id'] === $authUser->id) {
             return response()->json([
                 'success' => false,
@@ -131,10 +131,10 @@ class MessagesController extends Controller
 
         $destinatario = User::findOrFail($data['destinatario_id']);
 
-        // Usamos una transacción para mantener consistencia entre conversation y message
+        // Transacción
         $message = DB::transaction(function () use ($authUser, $destinatario, $data) {
 
-            // Buscar o crear conversación
+            // Buscar/crear conversación
             $conversation = $this->findOrCreateConversation($authUser->id, $destinatario->id);
 
             // Crear mensaje
@@ -146,14 +146,15 @@ class MessagesController extends Controller
                 'leido' => false,
             ]);
 
-            // Actualizar conversación (último mensaje, fecha y contadores de no leídos)
+            // Actualizar resumen de la conversación
             $conversation->last_message = $data['mensaje'];
             $conversation->last_message_at = now();
 
+            // Actualizar contador de no leídos
             if ($conversation->user1_id === $destinatario->id) {
-                $conversation->unread_count_user1 = $conversation->unread_count_user1 + 1;
+                $conversation->unread_count_user1++;
             } else {
-                $conversation->unread_count_user2 = $conversation->unread_count_user2 + 1;
+                $conversation->unread_count_user2++;
             }
 
             $conversation->save();
@@ -172,6 +173,7 @@ class MessagesController extends Controller
             ],
         ], 201);
     }
+
 
     /**
      * Marca todos los mensajes de una conversación como leídos
@@ -212,9 +214,9 @@ class MessagesController extends Controller
 
         // Puedes hacerlo sumando los campos de conversations
         $conversations = Conversation::where(function ($query) use ($authUser) {
-                $query->where('user1_id', $authUser->id)
-                    ->orWhere('user2_id', $authUser->id);
-            })
+            $query->where('user1_id', $authUser->id)
+                ->orWhere('user2_id', $authUser->id);
+        })
             ->get();
 
         $total = 0;

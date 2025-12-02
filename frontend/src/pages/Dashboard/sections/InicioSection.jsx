@@ -4,7 +4,10 @@ import BeneficiosCard from "../../../components/Beneficios/BeneficiosCard";
 import CumpleaniosCard from "../../../components/Cumpleanios/CumpleaniosCard";
 import EventosCarousel from "../../../components/Evento/EventoCarousel";
 import { motion } from "framer-motion";
-import { UserCheck, FileText, CalendarDays, LayoutDashboard } from "lucide-react";
+import { UserCheck, FileText, MessageSquare, CalendarDays, LayoutDashboard } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import useMensajes from "../../Mensajes/hooks/useMensajes";
+import MensajesCard from "./MensajesCard";
 
 
 export default function InicioSection({
@@ -101,8 +104,8 @@ export default function InicioSection({
                         />
                     </DashboardCard>
 
-                    <DashboardCard title="Mensajes Recientes">
-                        <p className="text-gray-600">No hay mensajes nuevos.</p>
+                    <DashboardCard>
+                        <MensajesCard onVerMas={() => setActive("mensajes")}/>
                     </DashboardCard>
                 </div>
 

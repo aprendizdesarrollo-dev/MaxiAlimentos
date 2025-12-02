@@ -26,8 +26,8 @@ import CrearEvento from "./pages/Evento/CrearEvento";
 import ComunicadosDashboard from "./pages/Comunicados/ComunicadosDashboard";
 import BeneficiosModal from "./components/Beneficios/BeneficiosModal";
 
-
-
+// MENSAJES
+import MensajesDashboard from "./pages/Mensajes/MensajesDashboard";
 
 // Ruta privada
 function PrivateRoute({ children }) {
@@ -40,6 +40,7 @@ function App() {
     <GoogleOAuthProvider clientId="141903075939-fqd4re87rbjlut5d80v5lc2ktqbpd2ke.apps.googleusercontent.com">
       <Router>
         <Routes>
+
           {/* 🔹 Rutas públicas */}
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
@@ -51,6 +52,18 @@ function App() {
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/crear-evento" element={<CrearEvento />} />
           <Route path="/directorio" element={<DirectorioDashboard />} />
+
+          {/* 🔹 MÓDULO MENSAJES */}
+          <Route
+            path="/mensajes"
+            element={
+              <PrivateRoute>
+                <MensajesDashboard />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Comunicado */}
           <Route
             path="/comunicados"
             element={
@@ -60,6 +73,7 @@ function App() {
             }
           />
 
+          {/* Beneficios */}
           <Route
             path="/beneficios"
             element={
@@ -68,6 +82,7 @@ function App() {
               </PrivateRoute>
             }
           />
+
           {/*Rutas protegidas */}
           <Route
             path="/dashboard"
@@ -96,6 +111,7 @@ function App() {
               </h1>
             }
           />
+
         </Routes>
 
         {/* Toaster global */}

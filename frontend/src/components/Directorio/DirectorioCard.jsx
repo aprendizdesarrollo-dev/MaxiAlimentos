@@ -98,7 +98,12 @@ const DirectorioCard = ({ user }) => {
           >
             Correo
           </a>
-
+          <button
+            onClick={() => navigate(`/mensajes/${empleado.id}`)}
+            className="w-full bg-[#397C3C] text-white font-semibold py-2 rounded-lg hover:bg-[#2f6a31] transition"
+          >
+            Enviar mensaje
+          </button>
         </div>
       </div>
     </div>
