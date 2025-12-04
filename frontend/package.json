@@ -14,7 +14,7 @@
     "@tailwindcss/line-clamp": "^0.4.4",
     "axios": "^1.13.2",
     "browser-image-compression": "^2.0.2",
-    "framer-motion": "^12.23.24",
+    "framer-motion": "^12.23.25",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.552.0",
     "react": "^19.1.1",

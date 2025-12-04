@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\ConfiguracionController;
 use App\Http\Controllers\Api\NotificacionController;
 use App\Http\Controllers\Api\MessagesController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\StatusController;
 
 
 // RUTAS DE LOGUEO
@@ -149,3 +150,11 @@ Route::middleware(['auth:api'])->prefix('mensajes')->group(function () {
 Route::get('/usuarios', function () {
     return App\Models\User::select('id', 'nombre', 'correo', 'cargo', 'foto_perfil')->get();
 });
+
+// RUTAS DE ESTADO DE USUARIO (MENSAJES)
+Route::middleware('jwt.auth')->group(function () {
+    Route::post('/status/typing', [StatusController::class, 'typing']);
+    Route::get('/status/{id}', [StatusController::class, 'show']);
+});
+
+Route::middleware('auth:sanctum')->get('/mensajes/nuevos/{conversationId}', [MessagesController::class, 'nuevos']);

@@ -14,37 +14,42 @@ class User extends Authenticatable implements JWTSubject
 
     protected $table = 'users';
 
-   protected $fillable = [
-    'nombre',
-    'segundo_nombre',
-    'apellido',
-    'genero',
-    'fecha_nacimiento',
-    'estado_civil',
-    'telefono_personal',
-    'correo',
-    'correo_corporativo',
-    'correo_personal',
-    'direccion',
-    'ciudad',
-    'departamento',
-    'pais',
-    'cedula',
-    'cargo',
-    'area',
-    'jefe_directo',
-    'rol',
-    'is_verified',
-    'verification_token',
-    'email_verified_at',
-    'foto_perfil',
-];
-
+    protected $fillable = [
+        'nombre',
+        'segundo_nombre',
+        'apellido',
+        'genero',
+        'fecha_nacimiento',
+        'estado_civil',
+        'telefono_personal',
+        'correo',
+        'correo_corporativo',
+        'correo_personal',
+        'direccion',
+        'ciudad',
+        'departamento',
+        'pais',
+        'cedula',
+        'cargo',
+        'area',
+        'jefe_directo',
+        'rol',
+        'is_verified',
+        'verification_token',
+        'email_verified_at',
+        'foto_perfil',
+    ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    protected $casts = [
+        'last_activity' => 'datetime',
+        'is_typing' => 'boolean',
+    ];
+
 
     // Métodos requeridos por JWT
     public function getJWTIdentifier()
@@ -60,5 +65,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(UserEducacion::class);
     }
-
 }

@@ -2,37 +2,40 @@ import api from "../../../services/api";
 
 export default function useMensajes() {
 
-    // 🟢 Obtener conversaciones recientes (para MensajesCard y Dashboard)
-    const obtenerConversaciones = async () => {
+    // Obtener nuevos mensajes en una conversación desde el último ID conocido
+    const obtenerNuevosMensajes = async (conversationId, lastId) => {
         try {
-            const res = await api.get("/mensajes/conversaciones");
-
-            return Array.isArray(res.data?.data) ? res.data.data : [];
-
+            const res = await api.get(`/mensajes/nuevos/${conversationId}?last_id=${lastId}`);
+            return res.data?.data || [];
         } catch (e) {
-            console.error("Error obteniendo conversaciones:", e);
+            console.error("Error obteniendo mensajes nuevos:", e);
             return [];
         }
     };
 
-    // 🟢 Obtener historial de chat con un usuario
+
+    // Obtener historial de chat
     const obtenerChat = async (id) => {
         try {
             const res = await api.get(`/mensajes/chat/${id}`);
 
-            return res.data?.data?.messages || [];
+            return {
+                conversation_id: res.data?.data?.conversation_id,
+                messages: res.data?.data?.messages || [],
+                other_user: res.data?.data?.other_user
+            };
 
         } catch (e) {
             console.error(`Error obteniendo chat con usuario ${id}:`, e);
-            return [];
+            return { conversation_id: null, messages: [] };
         }
     };
 
-    // 🟢 Enviar mensaje
-    const enviarMensaje = async (id, mensaje) => {
+    // Enviar mensaje compatible con tu backend
+    const enviarMensaje = async (destinatario_id, mensaje) => {
         try {
             const body = {
-                destinatario_id: Number(id),
+                destinatario_id,
                 mensaje: mensaje.trim(),
             };
 
@@ -46,9 +49,21 @@ export default function useMensajes() {
         }
     };
 
+    const obtenerConversaciones = async () => {
+        try {
+            const res = await api.get("/mensajes/conversaciones");
+            return res.data?.data || [];
+        } catch (e) {
+            console.error("Error obteniendo conversaciones:", e);
+            return [];
+        }
+    };
+
+
     return {
-        obtenerConversaciones,
         obtenerChat,
         enviarMensaje,
+        obtenerNuevosMensajes,
+        obtenerConversaciones,
     };
 }

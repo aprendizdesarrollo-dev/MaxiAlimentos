@@ -11,6 +11,65 @@ use Illuminate\Support\Facades\DB;
 
 class MessagesController extends Controller
 {
+
+    /**
+     * Devuelve solo los mensajes nuevos después de un ID dado.
+     * GET /mensajes/nuevos/{conversationId}?last_id=X
+     */
+    public function nuevos(Request $request, $conversationId)
+    {
+        $authUser = $request->user();
+
+        $conversation = Conversation::findOrFail($conversationId);
+
+        // Verificar que el usuario pertenezca a esta conversación
+        if (
+            $conversation->user1_id !== $authUser->id &&
+            $conversation->user2_id !== $authUser->id
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No autorizado para ver esta conversación.'
+            ], 403);
+        }
+
+        $lastId = (int) $request->query('last_id', 0);
+
+        $mensajes = Message::with(['remitente', 'destinatario'])
+            ->where('conversation_id', $conversationId)
+            ->where('id', '>', $lastId)
+            ->orderBy('id', 'asc')
+            ->get()
+            ->map(function (Message $message) use ($authUser) {
+                return [
+                    'id' => $message->id,
+                    'remitente_id' => $message->remitente_id,
+                    'destinatario_id' => $message->destinatario_id,
+                    'mensaje' => $message->mensaje,
+                    'leido' => $message->leido,
+                    'read_at' => $message->read_at,
+                    'created_at' => $message->created_at,
+                    'es_mio' => $message->remitente_id === $authUser->id,
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $mensajes,
+        ]);
+    }
+
+
+    public function typing(Request $request)
+    {
+        $user = $request->user();
+
+        $user->is_typing = $request->boolean('typing');
+        $user->save();
+
+        return response()->json(['success' => true]);
+    }
+
     /**
      * Lista las conversaciones del usuario autenticado,
      * para mostrar en la carta del dashboard de mensajes.
