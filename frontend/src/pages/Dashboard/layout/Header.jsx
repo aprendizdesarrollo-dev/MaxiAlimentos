@@ -106,13 +106,13 @@ export default function Header({ user, onConfigClick, onPerfilClick }) {
                         Configuración
                     </button>
 
-                    {/* 🔔 CAMPANA DE NOTIFICACIONES */}
+                    {/*CAMPANA DE NOTIFICACIONES */}
                     <NotificationBell
                         count={notificaciones.filter(n => !n.leida).length}
                         onClick={() => setOpen(!open)}
                     />
 
-                    {/* LISTA DE NOTIFICACIONES */}
+                    {/*LISTA DE NOTIFICACIONES */}
                     {open && (
                         <NotificationList
                             notificaciones={notificaciones}

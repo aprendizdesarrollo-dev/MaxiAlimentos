@@ -4,7 +4,7 @@ import api from "../../services/api";
 
 // Importar dashboards
 import AdminDashboard from "./AdminDashboard";
-import ColaboradorDashboard from "./ColaboradorDashboard";
+import ColaboradorDashboard from "./sections/ColaboradorDashboard/EmpleadoDashboard";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);

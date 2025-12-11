@@ -12,7 +12,7 @@ import VerifyCode from "./pages/Auth/VerifyCode";
 
 // DASHBOARD
 import AdminDashboard from "./pages/Dashboard/AdminDashboard";
-import ColaboradorDashboard from "./pages/Dashboard/ColaboradorDashboard";
+import EmpleadoDashboard from "./pages/Dashboard/sections/ColaboradorDashboard/EmpleadoDashboard";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import DirectorioDashboard from "./pages/Directorio/DirectorioDashboard";
 
