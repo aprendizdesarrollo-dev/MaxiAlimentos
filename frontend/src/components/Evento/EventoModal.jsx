@@ -3,7 +3,7 @@ import { X, CalendarDays } from "lucide-react";
 export default function EventoModal({ evento, cerrar, editar, eliminar }) {
   return (
     <div className="fixed inset-0 bg-[#00000080] backdrop-blur-sm flex justify-center items-start py-10 z-50 overflow-y-auto px-4">
-      
+
       <div className="bg-white rounded-3xl w-full max-w-5xl shadow-2xl overflow-hidden">
 
         {/* ENCABEZADO PREMIUM */}
@@ -46,32 +46,39 @@ export default function EventoModal({ evento, cerrar, editar, eliminar }) {
             <p className="text-sm text-gray-600 italic text-right">
               {evento.fecha
                 ? new Date(evento.fecha).toLocaleDateString("es-CO", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
                 : "Fecha por definir"}
             </p>
           </div>
         </div>
 
         {/* BOTONES */}
-        <div className="flex justify-center gap-6 px-8 pb-10">
+        {(editar || eliminar) && (
+          <div className="flex justify-center gap-6 px-8 pb-10">
 
-          <button
-            onClick={() => editar(evento)}
-            className="bg-[#397C3C] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#2f612f] transition"
-          >
-            Actualizar
-          </button>
+            {editar && (
+              <button
+                onClick={() => editar(evento)}
+                className="bg-[#397C3C] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#2f612f] transition"
+              >
+                Actualizar
+              </button>
+            )}
 
-          <button
-            onClick={() => eliminar(evento.id)}
-            className="bg-red-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-red-700 transition"
-          >
-            Eliminar
-          </button>
-        </div>
+            {eliminar && (
+              <button
+                onClick={() => eliminar(evento.id)}
+                className="bg-red-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-red-700 transition"
+              >
+                Eliminar
+              </button>
+            )}
+
+          </div>
+        )}
       </div>
     </div>
   );

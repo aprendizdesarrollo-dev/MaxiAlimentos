@@ -1,34 +1,49 @@
-// src/pages/Dashboard/ColaboradorDashboard/hooks/useEmpleadoData.js
-
-import api from "../../../../../services/api";
 import { useEffect, useState } from "react";
+import api from "../../../../../services/api";
 
 export function useEmpleadoData() {
 
-    const [data, setData] = useState({
-        beneficios: [],
-        eventos: [],
-        comunicados: [],
-        documentos: [],
-    });
+    const [beneficios, setBeneficios] = useState([]);
+    const [eventos, setEventos] = useState([]);
+    const [comunicados, setComunicados] = useState([]);
+    const [cumpleanios, setCumpleanios] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const cargar = async () => {
-            const [b, e, c] = await Promise.all([
-                api.get("/beneficios"),
-                api.get("/eventos"),
-                api.get("/comunicados"),
-            ]);
+        const cargarDatos = async () => {
+            try {
+                const [
+                    beneficiosRes,
+                    eventosRes,
+                    comunicadosRes,
+                    cumpleRes
+                ] = await Promise.all([
+                    api.get("/beneficios"),
+                    api.get("/eventos"),
+                    api.get("/comunicados"),
+                    api.get("/notificaciones/cumpleanios") 
+                ]);
 
-            setData({
-                beneficios: b.data.data,
-                eventos: e.data.data,
-                comunicados: c.data.data,
-            });
+                setBeneficios(beneficiosRes.data.data || []);
+                setEventos(eventosRes.data.data || []);
+                setComunicados(comunicadosRes.data.data || []);
+                setCumpleanios(cumpleRes.data.data || []);
+
+            } catch (error) {
+                console.error("Error cargando datos del dashboard empleado", error);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        cargar();
+        cargarDatos();
     }, []);
 
-    return data;
+    return {
+        beneficios,
+        eventos,
+        comunicados,
+        cumpleanios,
+        loading,
+    };
 }

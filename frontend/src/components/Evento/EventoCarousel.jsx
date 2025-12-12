@@ -12,7 +12,7 @@ import EventoModal from "./EventoModal";
 import EventoEditarModal from "./EventoEditarModal";
 import EventoEliminarModal from "./EventoEliminarModal";
 
-export default function EventoCarousel({ onChange }) {
+export default function EventoCarousel({ onChange, onCrear, onVerEvento }) {
   const [eventos, setEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -106,13 +106,16 @@ export default function EventoCarousel({ onChange }) {
           No hay eventos registrados por el momento.
         </p>
 
-        <button
-          onClick={() => (window.location.href = "/crear-evento")}
-          className="flex items-center gap-2 bg-[#397C3C] hover:bg-[#2f612f] text-white px-6 py-3 rounded-lg"
-        >
-          <PlusCircle size={20} />
-          Crear evento
-        </button>
+        {onCrear && (
+          <button
+            onClick={onCrear}
+            className="flex items-center gap-2 bg-[#397C3C] hover:bg-[#2f612f] text-white px-6 py-3 rounded-lg"
+          >
+            <PlusCircle size={20} />
+            Crear evento
+          </button>
+        )}
+
       </section>
     );
   }
@@ -125,13 +128,15 @@ export default function EventoCarousel({ onChange }) {
           Eventos y Actividades
         </h2>
 
-        <button
-          onClick={() => (window.location.href = "/crear-evento")}
-          className="bg-[#397C3C] flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:bg-[#2f612f]"
-        >
-          <PlusCircle size={20} />
-          Crear evento
-        </button>
+        {onCrear && (
+          <button
+            onClick={onCrear}
+            className="bg-[#397C3C] flex items-center gap-2 text-white px-4 py-2 rounded-lg hover:bg-[#2f612f]"
+          >
+            <PlusCircle size={20} />
+            Crear evento
+          </button>
+        )}
       </div>
 
       <Swiper

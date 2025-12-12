@@ -1,86 +1,79 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../../../../services/api";
 
-// Layout
 import SidebarEmpleado from "./layout/SidebarEmpleado";
-import HeaderEmpleado from "./layout/HeaderEmpleado";
-
-// Sección inicio (empleado)
 import InicioEmpleado from "./sections/InicioEmpleado";
 
-// Módulos reutilizados
-import ComunicadosDashboard from "../../../Comunicados/ComunicadosDashboard";
-import DocumentosDashboard from "../../../Documentos/DocumentosDashboard";
-import PerfilDashboard from "../../../Perfil/PerfilDashboard";
-import MensajesDashboard from "../../../Mensajes/MensajesDashboard";
+import ComunicadosEmpleado from "./sections/ComunicadosEmpleado";
+import DirectorioEmpleado from "./sections/DirectorioEmpleado";
+import DocumentosEmpleado from "./sections/DocumentosEmpleado";
+import MensajesEmpleado from "./sections/MensajesEmpleado";
+import PerfilEmpleado from "./sections/PerfilEmpleado";
 
-export default function EmpleadoDashboard({ user }) {
-  const [active, setActive] = useState("inicio");
+import { useUser } from "../../hooks/useUser";
 
-  // ✅ Igual al admin: abierto/cerrado
-  const [isOpen, setIsOpen] = useState(true);
+export default function EmpleadoDashboard() {
 
-  const navigate = useNavigate();
+    const [active, setActive] = useState("inicio");
+    const [isOpen, setIsOpen] = useState(true);
 
-  const onLogout = async () => {
-    try {
-      await api.post("/logout");
-    } catch (e) {
-      // no importa si falla
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("rol");
-      navigate("/login");
+    const { user, loading, handleLogout } = useUser();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex justify-center items-center">
+                <p className="text-gray-600 text-lg">Cargando...</p>
+            </div>
+        );
     }
-  };
 
-  const renderSection = () => {
-    switch (active) {
-      case "inicio":
-        return <InicioEmpleado user={user} />;
-      case "comunicados":
-        return <ComunicadosDashboard />;
-      case "documentos":
-        return <DocumentosDashboard />;
-      case "perfil":
-        return <PerfilDashboard />;
-      case "mensajes":
-        return <MensajesDashboard />;
-      case "beneficios":
-        // por ahora dejamos inicio (luego lo conectamos bien)
-        return <InicioEmpleado user={user} />;
-      default:
-        return null;
+    if (!user) {
+        return (
+            <div className="min-h-screen flex justify-center items-center">
+                <p className="text-gray-600 text-lg">No autorizado</p>
+            </div>
+        );
     }
-  };
 
-  return (
-    <div className="min-h-screen bg-[#f6f6f6] overflow-hidden">
-      <SidebarEmpleado
-        active={active}
-        setActive={setActive}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        onLogout={onLogout}
-      />
+    if (user.rol !== "Empleado") {
+        return (
+            <div className="min-h-screen flex justify-center items-center">
+                <p className="text-gray-600 text-lg">No autorizado</p>
+            </div>
+        );
+    }
 
-      {/* ✅ Margen como admin, PERO sumando el gap flotante (left-6 = 24px aprox)
-          Sidebar abierto: 230px + 24px*2 => usamos 260px aprox
-          Sidebar cerrado: 80px + 24px*2 => usamos 110px aprox
-      */}
-      <main
-        className={`
-          transition-all duration-300
-          ${isOpen ? "ml-[260px]" : "ml-[110px]"}
-          p-10
-        `}
-      >
-        {/* Reutiliza el header que ya tienes (si quieres, luego lo ajustamos para empleado) */}
-        <HeaderEmpleado user={user} />
+    const renderSection = () => {
+        switch (active) {
+            case "inicio":
+                return <InicioEmpleado user={user} />;
+            case "comunicados":
+                return <ComunicadosEmpleado />;
+            case "directorio":
+                return <DirectorioEmpleado />;
+            case "documentos":
+                return <DocumentosEmpleado />;
+            case "mensajes":
+                return <MensajesEmpleado />;
+            case "perfil":
+                return <PerfilEmpleado />;
+            default:
+                return null;
+        }
+    };
 
-        <div className="mt-8">{renderSection()}</div>
-      </main>
-    </div>
-  );
+    return (
+        <div className="flex min-h-screen bg-[#f6f6f6] overflow-hidden">
+            <SidebarEmpleado
+                active={active}
+                setActive={setActive}
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                onLogout={handleLogout}
+            />
+
+            <main className={`flex-1 p-10 transition-all ${isOpen ? "ml-[230px]" : "ml-[80px]"}`}>
+                {renderSection()}
+            </main>
+        </div>
+    );
 }

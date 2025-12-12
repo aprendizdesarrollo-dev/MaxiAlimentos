@@ -1,12 +1,15 @@
 import {
     Home,
-    Bell,
+    Megaphone,
+    Users,
     FileText,
-    Gift,
+    MessageCircle,
     User,
-    MessageSquare,
     LogOut,
     Menu,
+    Folder,
+    Settings,
+    MessageSquare,
 } from "lucide-react";
 
 export default function SidebarEmpleado({
@@ -18,9 +21,10 @@ export default function SidebarEmpleado({
 }) {
     const menu = [
         { id: "inicio", label: "Inicio", icon: <Home size={22} /> },
-        { id: "comunicados", label: "Comunicados", icon: <Bell size={22} /> },
-        { id: "documentos", label: "Documentos", icon: <FileText size={22} /> },
-        { id: "beneficios", label: "Beneficios", icon: <Gift size={22} /> },
+        { id: "comunicados", label: "Comunicados", icon: <FileText size={22} /> },
+        { id: "directorio", label: "Directorio", icon: <Users size={22} /> },
+        { id: "documentos", label: "Documentos", icon: <Folder size={22} /> },
+        { id: "config", label: "Configuración", icon: <Settings size={22} /> },
         { id: "perfil", label: "Perfil", icon: <User size={22} /> },
         { id: "mensajes", label: "Mensajes", icon: <MessageSquare size={22} /> },
     ];
@@ -43,13 +47,12 @@ export default function SidebarEmpleado({
             {isOpen && (
                 <div className="flex items-center justify-center px-4 pt-6">
                     <img
-                        src="/logo-maxi.png"
+                        src="../../../../../public/assets/logo.png"
                         alt="MaxiAlimentos"
                         className="w-10 h-10 object-contain"
                     />
                 </div>
             )}
-
 
             {/* DIVISOR */}
             {isOpen && (
@@ -74,7 +77,7 @@ export default function SidebarEmpleado({
                 transition
                 ${isActive
                                     ? "bg-white text-[#2F6F33] shadow"
-                                    : "text-white hover:bg-white/15"
+                                    : "text-white hover:bg白/15"
                                 }
               `}
                             title={!isOpen ? item.label : undefined}

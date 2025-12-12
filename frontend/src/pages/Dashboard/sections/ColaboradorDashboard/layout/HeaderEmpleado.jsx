@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Users, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+
 import NotificationBell from "../../../../../components/Notificaciones/NotificationBell.jsx";
 import NotificationList from "../../../../../components/Notificaciones/NotificationList.jsx";
 import { useNotificaciones } from "../../../../../hooks/useNotificaciones.jsx";
@@ -8,7 +11,7 @@ import { useNotificaciones } from "../../../../../hooks/useNotificaciones.jsx";
 
 export default function Header({ user, onConfigClick, onPerfilClick }) {
 
-   
+    const navigate = useNavigate();
     const { notificaciones, marcarLeida } = useNotificaciones();
     const [open, setOpen] = useState(false);
 
@@ -50,7 +53,7 @@ export default function Header({ user, onConfigClick, onPerfilClick }) {
                         <p className="text-lg opacity-90">{user?.cargo}</p>
 
                         <button
-                            onClick={onPerfilClick}
+                             onClick={() => navigate("../../../../../Perfil/PerfilDashboard")}
                             className="
                                 mt-3 
                                 relative 
@@ -88,7 +91,7 @@ export default function Header({ user, onConfigClick, onPerfilClick }) {
                     </p>
 
                     <button
-                        onClick={onConfigClick}
+                        onClick={() => navigate("/dashboard/configuracion")}
                         className="
                             flex items-center gap-2 
                             bg-white/20 

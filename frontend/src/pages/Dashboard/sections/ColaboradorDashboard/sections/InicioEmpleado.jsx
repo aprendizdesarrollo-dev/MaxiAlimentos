@@ -1,77 +1,134 @@
-// src/pages/Dashboard/ColaboradorDashboard/sections/InicioEmpleado.jsx
+import Header from "../../../layout/Header";
 
 import DashboardCard from "../../../../../components/Dashboard/DashboardCard";
 import BeneficiosCard from "../../../../../components/Beneficios/BeneficiosCard";
 import CumpleaniosCard from "../../../../../components/Cumpleanios/CumpleaniosCard";
-import EventoCarousel from "../../../../../components/Evento/EventoCarousel";
+import EventoCarouselEmpleado from "./EventoCarouselEmpleado";
+
+
+import { FileText } from "lucide-react";
+import MensajesCard from "../../MensajesCard";
 
 import { useEmpleadoData } from "../hooks/useEmpleadoData";
 
-export default function InicioEmpleado({ user }) {
+export default function InicioEmpleado({ user, setActive }) {
 
-    const { beneficios, eventos, comunicados } = useEmpleadoData();
+  const {
+    beneficios,
+    eventos,
+    comunicados,
+    cumpleanios,
+    loading,
+  } = useEmpleadoData();
 
+  if (loading) {
     return (
-        <div className="space-y-8">
-
-            {/* CONTENIDO PRINCIPAL */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                {/* COLUMNA IZQUIERDA */}
-                <div className="flex flex-col gap-6">
-
-                    {/* BENEFICIOS */}
-                    <DashboardCard className="!p-4">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                            Beneficios Disponibles
-                        </h2>
-
-                        <BeneficiosCard beneficios={beneficios} limite={3} soloLectura />
-                    </DashboardCard>
-
-                    {/* CUMPLEAÑOS */}
-                    <DashboardCard className="!p-4">
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                            Cumpleaños del mes
-                        </h2>
-
-                        <CumpleaniosCard data={[]} soloLectura />
-                    </DashboardCard>
-
-                </div>
-
-                {/* COLUMNA DERECHA */}
-                <div className="col-span-2 flex flex-col gap-6">
-
-                    {/* EVENTOS */}
-                    <DashboardCard>
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                            Eventos próximos
-                        </h2>
-
-                        <EventoCarousel eventos={eventos} />
-                    </DashboardCard>
-
-                    {/* COMUNICADOS */}
-                    <DashboardCard>
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                            Comunicados recientes
-                        </h2>
-
-                        {comunicados.slice(0, 4).map((c) => (
-                            <div key={c.id} className="border-b py-3">
-                                <p className="font-semibold text-gray-700">{c.titulo}</p>
-                                <p className="text-gray-500 text-sm">{c.fecha}</p>
-                            </div>
-                        ))}
-
-                        {comunicados.length === 0 && (
-                            <p className="text-gray-500">No hay comunicados disponibles.</p>
-                        )}
-                    </DashboardCard>
-                </div>
-
-            </div>
-        </div>
+      <div className="text-gray-500 text-lg animate-pulse">
+        Cargando información...
+      </div>
     );
+  }
+
+  return (
+    <div className="space-y-10">
+      {/* HEADER IGUAL AL ADMIN */}
+      <Header
+        user={user}
+        onConfigClick={() => setActive("config")}
+        onPerfilClick={() => setActive("perfil")}
+      />
+
+      {/* CONTENIDO PRINCIPAL */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* IZQUIERDA */}
+        <div className="flex flex-col gap-6">
+
+          {/* BENEFICIOS */}
+          <DashboardCard className="!p-4">
+            <BeneficiosCard
+              beneficios={beneficios}
+              limite={3}
+              soloLectura
+            />
+          </DashboardCard>
+
+          {/* CUMPLEAÑOS */}
+          <DashboardCard className="!p-4">
+            <CumpleaniosCard
+              data={cumpleanios}
+              soloLectura
+            />
+          </DashboardCard>
+
+          {/* MENSAJES (ATENCIÓN RÁPIDA) */}
+          <DashboardCard>
+            <MensajesCard onVerMas={() => setActive("mensajes")} />
+          </DashboardCard>
+        </div>
+
+        {/* DERECHA */}
+        <div className="col-span-2 flex flex-col gap-6">
+
+          {/* EVENTOS */}
+          <DashboardCard>
+            <EventoCarouselEmpleado eventos={eventos} />
+          </DashboardCard>
+
+          {/* COMUNICADOS RECIENTES */}
+          <DashboardCard
+            title={
+              <div className="flex items-center gap-2 text-[#397C3C] font-semibold text-lg">
+                <FileText size={22} />
+                <span>Comunicados recientes</span>
+              </div>
+            }
+            className="flex-1"
+          >
+            <div className="min-h-[260px] max-h-[260px] overflow-y-auto pr-2 space-y-6">
+              {comunicados?.length > 0 ? (
+                comunicados.slice(0, 4).map((com) => (
+                  <div key={com.id} className="pb-4 border-b border-gray-200">
+                    <p className="text-[#397C3C] font-semibold text-[15px] mb-1">
+                      {com.titulo}
+                    </p>
+
+                    <p className="text-gray-400 text-xs mb-1">
+                      {new Date(com.created_at).toLocaleDateString("es-CO", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+
+                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                      {com.mensaje}
+                    </p>
+
+                    <button
+                      onClick={() => setActive("comunicados")}
+                      className="text-[#397C3C] text-sm font-medium hover:underline"
+                    >
+                      Ver más →
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm text-center py-3">
+                  No hay comunicados recientes.
+                </p>
+              )}
+            </div>
+
+            <button
+              onClick={() => setActive("comunicados")}
+              className="bg-[#397C3C] mt-6 flex items-center justify-center gap-2 text-white px-5 py-3 rounded-lg hover:bg-[#2f612f] transition w-full text-sm font-medium"
+            >
+              <FileText size={18} /> Ver todos los comunicados
+            </button>
+          </DashboardCard>
+        </div>
+      </div>
+    </div>
+  );
 }
