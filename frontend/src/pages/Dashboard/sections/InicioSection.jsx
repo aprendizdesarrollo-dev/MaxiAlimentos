@@ -32,58 +32,6 @@ export default function InicioSection({
                 onPerfilClick={() => setActive("perfil")}
             />
 
-            {/* WIDGETS SUPERIORES */}
-            <section className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-
-                {/* Widget 1 */}
-                <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#397C3C]"
-                >
-                    <UserCheck className="text-[#397C3C]" size={26} />
-                    <p className="text-gray-600 text-sm">Empleados activos</p>
-                    <h3 className="text-2xl font-bold text-[#397C3C]">
-                        {stats ? stats.empleados_activos : "..."}
-                    </h3>
-                </motion.div>
-
-                {/* Widget 2 */}
-                <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#5bad5c]"
-                >
-                    <FileText className="text-[#397C3C]" size={26} />
-                    <p className="text-gray-600 text-sm">Comunicados este mes</p>
-                    <h3 className="text-2xl font-bold text-[#397C3C]">
-                        {stats ? stats.comunicados_mes : "..."}
-                    </h3>
-                </motion.div>
-
-                {/* Widget 3 */}
-                <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#397C3C]"
-                >
-                    <CalendarDays className="text-[#397C3C]" size={26} />
-                    <p className="text-gray-600 text-sm">Eventos activos</p>
-                    <h3 className="text-2xl font-bold text-[#397C3C]">
-                        {stats ? stats.eventos_activos : "..."}
-                    </h3>
-                </motion.div>
-
-                {/* Widget 4 */}
-                <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    className="bg-white shadow-md rounded-2xl p-5 flex flex-col gap-2 border-l-4 border-[#5bad5c]"
-                >
-                    <LayoutDashboard className="text-[#397C3C]" size={26} />
-                    <p className="text-gray-600 text-sm">Módulos del sistema</p>
-                    <h3 className="text-2xl font-bold text-[#397C3C]">
-                        {stats ? stats.modulos : "..."}
-                    </h3>
-                </motion.div>
-            </section>
-
             {/* CONTENIDO PRINCIPAL */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

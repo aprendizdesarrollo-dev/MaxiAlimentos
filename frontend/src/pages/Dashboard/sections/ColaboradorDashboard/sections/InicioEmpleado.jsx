@@ -14,15 +14,6 @@ export default function InicioEmpleado({ user }) {
     return (
         <div className="space-y-8">
 
-            {/* TÍTULO PRINCIPAL */}
-            <h1 className="text-3xl font-bold text-[#397C3C]">
-                Bienvenido, {user.nombre}
-            </h1>
-
-            <p className="text-gray-700 text-lg">
-                Aquí podrás ver tus comunicados, eventos, cumpleaños y beneficios disponibles.
-            </p>
-
             {/* CONTENIDO PRINCIPAL */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

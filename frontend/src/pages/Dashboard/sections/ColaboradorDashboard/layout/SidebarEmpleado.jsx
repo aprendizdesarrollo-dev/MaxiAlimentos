@@ -2,97 +2,132 @@ import {
     Home,
     Bell,
     FileText,
+    Gift,
     User,
     MessageSquare,
-    Gift,
+    LogOut,
     Menu,
-    LogOut
 } from "lucide-react";
 
-export default function SidebarEmpleado({ active, setActive, isOpen, setIsOpen, onLogout }) {
-
+export default function SidebarEmpleado({
+    active,
+    setActive,
+    isOpen,
+    setIsOpen,
+    onLogout,
+}) {
     const menu = [
         { id: "inicio", label: "Inicio", icon: <Home size={22} /> },
         { id: "comunicados", label: "Comunicados", icon: <Bell size={22} /> },
         { id: "documentos", label: "Documentos", icon: <FileText size={22} /> },
         { id: "beneficios", label: "Beneficios", icon: <Gift size={22} /> },
-        { id: "perfil", label: "Mi Perfil", icon: <User size={22} /> },
+        { id: "perfil", label: "Perfil", icon: <User size={22} /> },
         { id: "mensajes", label: "Mensajes", icon: <MessageSquare size={22} /> },
     ];
 
     return (
-        <>
-        {/* BOTÓN HAMBURGUESA (SIEMPRE VISIBLE) */}
-        <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="
-                fixed top-4 left-4 z-50 bg-[#397C3C] text-white 
-                p-3 rounded-full shadow-lg hover:bg-[#2F6230] transition
-            "
-        >
-            <Menu size={22} />
-        </button>
-
-        {/* SIDE BAR */}
         <aside
             className={`
-                bg-white h-screen fixed top-0 left-0 z-40
-                shadow-xl border-r border-gray-200
-                rounded-r-[40px]
-                flex flex-col
-                transition-all duration-300
-                ${isOpen ? "w-[260px] px-6" : "w-0 px-0 overflow-hidden"}
-            `}
+        fixed top-6 left-6 z-40
+        h-[calc(100vh-48px)]
+        ${isOpen ? "w-[230px]" : "w-[80px]"}
+        bg-[#2F6F33]
+        rounded-3xl
+        shadow-2xl
+        transition-all duration-300
+        flex flex-col
+        overflow-hidden
+      `}
         >
+            {/* LOGO ARRIBA (QUIETO) */}
+            {isOpen && (
+                <div className="flex items-center justify-center px-4 pt-6">
+                    <img
+                        src="/logo-maxi.png"
+                        alt="MaxiAlimentos"
+                        className="w-10 h-10 object-contain"
+                    />
+                </div>
+            )}
 
-            {/* LOGO */}
-            <div className="flex flex-col items-center mt-8 mb-6">
-                <img 
-                    src="/logo-maxi.png"
-                    alt="logo"
-                    className="w-32"
-                />
 
-                {/* SEPARADOR */}
-                <div className="w-28 h-[2px] bg-gray-300 mt-5 rounded-full"></div>
-            </div>
+            {/* DIVISOR */}
+            {isOpen && (
+                <div className="px-4 mt-5">
+                    <div className="h-[1px] bg-white/20 rounded-full" />
+                </div>
+            )}
 
             {/* MENÚ */}
-            <nav className="flex flex-col gap-4 mt-4">
-                {menu.map((item) => (
-                    <button
-                        key={item.id}
-                        onClick={() => setActive(item.id)}
-                        className={`
-                            flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-                            text-left shadow-sm
-                            ${active === item.id 
-                                ? "bg-[#397C3C] text-white shadow-md" 
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"}
-                        `}
-                    >
-                        {item.icon}
-                        <span className="font-medium tracking-wide">{item.label}</span>
-                    </button>
-                ))}
+            <nav className="flex flex-col gap-2 px-3 mt-6">
+                {menu.map((item) => {
+                    const isActive = active === item.id;
+
+                    return (
+                        <button
+                            key={item.id}
+                            onClick={() => setActive(item.id)}
+                            className={`
+                h-12 px-3
+                flex items-center gap-3
+                rounded-xl
+                transition
+                ${isActive
+                                    ? "bg-white text-[#2F6F33] shadow"
+                                    : "text-white hover:bg-white/15"
+                                }
+              `}
+                            title={!isOpen ? item.label : undefined}
+                        >
+                            {item.icon}
+                            {isOpen && (
+                                <span className="text-sm font-medium truncate">
+                                    {item.label}
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
             </nav>
 
-            {/* ESPACIO */}
-            <div className="flex-1"></div>
+            <div className="flex-1" />
 
-            {/* BOTÓN CERRAR SESIÓN */}
-            <button
-                onClick={onLogout}
-                className="
-                    flex items-center gap-3 mb-8 px-4 py-3
-                    rounded-xl bg-red-600 text-white 
-                    hover:bg-red-700 transition shadow-md
-                "
-            >
-                <LogOut size={22} />
-                <span className="font-medium">Cerrar sesión</span>
-            </button>
+            {/* BOTÓN MENÚ (HAMBURGUESA) */}
+            <div className="px-3 mb-3">
+                <button
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    className="
+            h-12 w-full
+            flex items-center justify-center
+            rounded-xl
+            bg-white/15 hover:bg-white/25
+            transition
+          "
+                    title="Menú"
+                >
+                    <Menu size={22} className="text-white" />
+                </button>
+            </div>
+
+            {/* CERRAR SESIÓN */}
+            <div className="px-3 pb-5">
+                <button
+                    onClick={onLogout}
+                    className="
+            h-12 w-full
+            flex items-center justify-center gap-3
+            rounded-xl
+            bg-[#397C3C]
+            hover:bg-[#2F6230]
+            text-white
+            transition shadow
+          "
+                    title="Cerrar sesión"
+                >
+                    <LogOut size={20} />
+                    {isOpen && <span className="text-sm font-medium">Salir</span>}
+                </button>
+            </div>
         </aside>
-        </>
     );
 }
