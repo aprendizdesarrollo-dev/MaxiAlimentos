@@ -1,6 +1,7 @@
 import { BadgeCheck, Image as ImageIcon } from "lucide-react";
+import BeneficiosModal from "./BeneficiosModal";
 
-export default function BeneficiosCard({ beneficios = [], onVerMas }) {
+export default function BeneficiosCard({ beneficios = [], onVerMas, modoAdmin = false }) {
 
     const resumen = beneficios.slice(0, 2);
 

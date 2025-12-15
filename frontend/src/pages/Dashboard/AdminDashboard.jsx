@@ -15,7 +15,7 @@ import BeneficiosModal from "../../components/Beneficios/BeneficiosModal";
 
 import { useUser } from "./hooks/useUser";
 import { useStats } from "./hooks/useStats";
-import { useBeneficios } from "./hooks/useBeneficios";
+import { useBeneficios } from "../../components/Beneficios/useBeneficios";
 import { useComunicados } from "./hooks/useComunicados";
 import { useCumpleanios } from "./hooks/useCumpleanios";
 

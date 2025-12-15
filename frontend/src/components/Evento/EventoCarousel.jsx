@@ -12,7 +12,7 @@ import EventoModal from "./EventoModal";
 import EventoEditarModal from "./EventoEditarModal";
 import EventoEliminarModal from "./EventoEliminarModal";
 
-export default function EventoCarousel({ onChange, onCrear, onVerEvento }) {
+export default function EventoCarousel({ onChange, onCrear, onVerEvento, modoAdmin = false}) {
   const [eventos, setEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -164,6 +164,7 @@ export default function EventoCarousel({ onChange, onCrear, onVerEvento }) {
           cerrar={cerrarModal}
           editar={editar}
           eliminar={confirmar}
+          modoAdmin={modoAdmin}
         />
       )}
 

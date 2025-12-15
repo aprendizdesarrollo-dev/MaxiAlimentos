@@ -17,6 +17,7 @@ export default function BeneficiosModal({
     onCreate,
     onEdit,
     onDelete,
+    modoAdmin = true,
 }) {
 
     // 🔥 AQUÍ SÍ — LOS HOOKS VAN DENTRO DEL COMPONENTE
@@ -123,45 +124,48 @@ export default function BeneficiosModal({
                                         </div>
 
                                         {/* BOTONES */}
-                                        <div className="absolute top-4 right-4 flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setEditando(b);
-                                                    setShowForm(true);
-                                                }}
-                                                className="text-[#397C3C] hover:text-[#285928]"
-                                            >
-                                                <Pencil size={18} />
-                                            </button>
+                                        {modoAdmin && (
+                                            <div className="absolute top-4 right-4 flex gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setEditando(b);
+                                                        setShowForm(true);
+                                                    }}
+                                                    className="text-[#397C3C] hover:text-[#285928]"
+                                                >
+                                                    <Pencil size={18} />
+                                                </button>
 
-                                            <button
-                                                onClick={() => setConfirmDelete(b)}
-                                                className="text-red-600 hover:text-red-700"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
+                                                <button
+                                                    onClick={() => setConfirmDelete(b)}
+                                                    className="text-red-600 hover:text-red-700"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })}
-
                         </section>
                     )}
                 </div>
 
                 {/* BOTÓN CREAR */}
-                <div className="p-5 border-t bg-gray-100 flex justify-end">
-                    <button
-                        onClick={() => {
-                            setEditando(null);
-                            setShowForm(true);
-                        }}
-                        className="flex items-center gap-2 bg-[#397C3C] text-white px-6 py-3 rounded-lg shadow hover:bg-[#2f612f] transition"
-                    >
-                        <PlusCircle size={18} />
-                        Crear beneficio
-                    </button>
-                </div>
+                {modoAdmin && (
+                    <div className="p-5 border-t bg-gray-100 flex justify-end">
+                        <button
+                            onClick={() => {
+                                setEditando(null);
+                                setShowForm(true);
+                            }}
+                            className="flex items-center gap-2 bg-[#397C3C] text-white px-6 py-3 rounded-lg shadow hover:bg-[#2f612f] transition"
+                        >
+                            <PlusCircle size={18} />
+                            Crear beneficio
+                        </button>
+                    </div>
+                )}
             </motion.div>
 
             {/* =============================== */}

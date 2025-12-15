@@ -2,7 +2,7 @@ import Header from "../layout/Header";
 import DashboardCard from "../../../components/Dashboard/DashboardCard";
 import BeneficiosCard from "../../../components/Beneficios/BeneficiosCard";
 import CumpleaniosCard from "../../../components/Cumpleanios/CumpleaniosCard";
-import EventosCarousel from "../../../components/Evento/EventoCarousel";
+import EventoCarousel from "../../../components/Evento/EventoCarousel";
 import { motion } from "framer-motion";
 import { UserCheck, FileText, MessageSquare, CalendarDays, LayoutDashboard } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,7 +19,8 @@ export default function InicioSection({
     onVerMasCumple,
     onVerMasBeneficios,
     setActive,
-    onEventosChange
+    onEventosChange,
+    modeAdmin = true,
 }) {
 
     return (
@@ -42,6 +43,7 @@ export default function InicioSection({
                         <BeneficiosCard
                             beneficios={beneficios}
                             onVerMas={onVerMasBeneficios}
+                            modoAdmin={true}
                         />
                     </DashboardCard>
 
@@ -53,7 +55,7 @@ export default function InicioSection({
                     </DashboardCard>
 
                     <DashboardCard>
-                        <MensajesCard onVerMas={() => setActive("mensajes")}/>
+                        <MensajesCard onVerMas={() => setActive("mensajes")} />
                     </DashboardCard>
                 </div>
 
@@ -61,7 +63,11 @@ export default function InicioSection({
                 <div className="col-span-2 flex flex-col gap-6">
 
                     <DashboardCard>
-                        <EventosCarousel onChange={onEventosChange} />
+                        <EventoCarousel
+                            modoAdmin={true}
+                            onCrear={() => (window.location.href = "/crear-evento")}
+                        />
+
                     </DashboardCard>
 
                     <DashboardCard
@@ -120,4 +126,4 @@ export default function InicioSection({
             </div>
         </div>
     );
-}
+}    

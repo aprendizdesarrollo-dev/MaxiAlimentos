@@ -12,22 +12,38 @@ export function useEmpleadoData() {
     useEffect(() => {
         const cargarDatos = async () => {
             try {
+                const token = localStorage.getItem("token");
+
                 const [
                     beneficiosRes,
                     eventosRes,
                     comunicadosRes,
-                    cumpleRes
                 ] = await Promise.all([
-                    api.get("/beneficios"),
-                    api.get("/eventos"),
-                    api.get("/comunicados"),
-                    api.get("/notificaciones/cumpleanios") 
+                    api.get("/beneficios", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                    api.get("/eventos", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                    api.get("/comunicados", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
                 ]);
 
                 setBeneficios(beneficiosRes.data.data || []);
                 setEventos(eventosRes.data.data || []);
                 setComunicados(comunicadosRes.data.data || []);
-                setCumpleanios(cumpleRes.data.data || []);
+
+                // 👇 cumpleaños aparte
+                try {
+                    const cumpleRes = await api.get("/notificaciones/cumpleanios", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setCumpleanios(cumpleRes.data.data || []);
+                } catch (e) {
+                    console.warn("Cumpleaños no disponibles para empleado");
+                    setCumpleanios([]);
+                }
 
             } catch (error) {
                 console.error("Error cargando datos del dashboard empleado", error);
@@ -38,7 +54,6 @@ export function useEmpleadoData() {
 
         cargarDatos();
     }, []);
-
     return {
         beneficios,
         eventos,

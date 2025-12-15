@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 import SidebarEmpleado from "./layout/SidebarEmpleado";
-import InicioEmpleado from "./sections/InicioEmpleado";
+import InicioEmpleado from "./InicioEmpleado";
 
-import ComunicadosEmpleado from "./sections/ComunicadosEmpleado";
-import DirectorioEmpleado from "./sections/DirectorioEmpleado";
-import DocumentosEmpleado from "./sections/DocumentosEmpleado";
-import MensajesEmpleado from "./sections/MensajesEmpleado";
-import PerfilEmpleado from "./sections/PerfilEmpleado";
+import ComunicadosEmpleado from "./sections/Comunicados/ComunicadosEmpleado";
+import DirectorioEmpleado from "./sections/Directorio/DirectorioEmpleado";
+import DocumentosEmpleado from "./sections/Documentos/DocumentosEmpleado";
+import MensajesEmpleado from "./sections/Mensajes/MensajesEmpleado";
+import PerfilEmpleado from "./sections/Perfil/PerfilEmpleado";
 
 import { useUser } from "../../hooks/useUser";
 

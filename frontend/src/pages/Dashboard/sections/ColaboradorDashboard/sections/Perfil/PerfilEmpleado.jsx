@@ -1,4 +1,4 @@
-import PerfilDashboard from "../../../../Perfil/PerfilDashboard";
+import PerfilDashboard from "../../../../../Perfil/PerfilDashboard";
 
 export default function PerfilEmpleado() {
     return <PerfilDashboard />;
